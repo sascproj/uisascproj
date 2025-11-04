@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | UniFest 2024</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    :root {
+        --primary: #2C3E50;
+        --secondary: #E74C3C;
+        --accent: #F39C12;
+        --light: #ECF0F1;
+        --dark: #2C3E50;
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .sidebar {
+        background-color: var(--primary);
+        color: white;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        padding-top: 1rem;
+    }
+
+    .sidebar .nav-link {
+        color: rgba(255,255,255,0.8);
+        padding: 0.8rem 1.5rem;
+        border-left: 4px solid transparent;
+        transition: all 0.3s;
+    }
+
+    .sidebar .nav-link.active, .sidebar .nav-link:hover {
+        background-color: rgba(255,255,255,0.1);
+        border-left: 4px solid var(--accent);
+        color: white;
+    }
+
+    .content {
+        margin-left: 250px;
+        padding: 2rem;
+    }
+
+    .navbar {
+        background: var(--primary);
+        color: white;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        border-radius: 10px;
+    }
+
+    .card h5 {
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #1a252f;
+    }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar d-flex flex-column">
+    <div class="text-center mb-4">
+        <h4><i class="fas fa-user-shield me-2"></i>Admin Panel</h4>
+    </div>
+    <a href="#" class="nav-link active"><i class="fas fa-home me-2"></i>Dashboard</a>
+    <a href="#" class="nav-link"><i class="fas fa-university me-2"></i>Manage Colleges</a>
+    <a href="#" class="nav-link"><i class="fas fa-trophy me-2"></i>Manage Competitions</a>
+    <a href="#" class="nav-link"><i class="fas fa-users me-2"></i>Participants</a>
+    <a href="#" class="nav-link"><i class="fas fa-chart-line me-2"></i>Results</a>
+    <a href="main.html" class="nav-link text-danger"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+</div>
+
+<!-- Main Content -->
+<div class="content">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4 rounded">
+        <div class="container-fluid">
+            <h4 class="text-white mb-0"><i class="fas fa-graduation-cap me-2"></i>UniFest Admin Dashboard</h4>
+        </div>
+    </nav>
+
+    <!-- Dashboard Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3">
+                <h5>Total Colleges</h5>
+                <h2 class="text-primary fw-bold">15</h2>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3">
+                <h5>Competitions</h5>
+                <h2 class="text-success fw-bold">24</h2>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3">
+                <h5>Participants</h5>
+                <h2 class="text-warning fw-bold">342</h2>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3">
+                <h5>Days Left</h5>
+                <h2 class="text-danger fw-bold">3</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Section -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card p-4">
+                <h5><i class="fas fa-university me-2"></i>Add College</h5>
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">College Name</label>
+                        <input type="text" class="form-control" placeholder="Enter college name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" placeholder="College username">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" placeholder="Set password">
+                    </div>
+                    <button class="btn btn-primary">Add College</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card p-4">
+                <h5><i class="fas fa-trophy me-2"></i>Add Competition</h5>
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Competition Name</label>
+                        <input type="text" class="form-control" placeholder="Enter competition name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Venue</label>
+                        <input type="text" class="form-control" placeholder="Enter venue">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date & Time</label>
+                        <input type="datetime-local" class="form-control">
+                    </div>
+                    <button class="btn btn-success">Add Competition</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="card p-4">
+        <h5 class="mb-3"><i class="fas fa-list me-2"></i>Recent Competitions</h5>
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Competition</th>
+                    <th>Date</th>
+                    <th>Venue</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Code Marathon</td>
+                    <td>Oct 16, 10:00 AM</td>
+                    <td>Lab 3</td>
+                    <td><span class="badge bg-success">Open</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning">Edit</button>
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dance Off</td>
+                    <td>Oct 17, 7:00 PM</td>
+                    <td>Main Stage</td>
+                    <td><span class="badge bg-danger">Closed</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning">Edit</button>
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Debate Championship</td>
+                    <td>Oct 18, 2:00 PM</td>
+                    <td>Seminar Hall 1</td>
+                    <td><span class="badge bg-success">Open</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning">Edit</button>
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
