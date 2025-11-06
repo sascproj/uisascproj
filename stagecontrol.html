@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stage Controller Dashboard - UniFest 2026</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --secondary: #E74C3C;
+            --accent: #F39C12;
+            --success: #27AE60;
+            --warning: #F1C40F;
+            --info: #3498DB;
+            --light: #ECF0F1;
+            --dark: #2C3E50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(to bottom, var(--primary), #1a252f);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            padding-top: 1rem;
+            box-shadow: 3px 0 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.8rem 1.5rem;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+            margin: 2px 0;
+        }
+
+        .sidebar .nav-link.active, 
+        .sidebar .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--accent);
+            color: white;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+        }
+
+        /* Main Content */
+        .content {
+            margin-left: 250px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            border-radius: 10px;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        /* Progress Bars */
+        .progress {
+            height: 8px;
+            margin: 5px 0;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #1a252f;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            border: none;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            border: none;
+            color: #333;
+        }
+
+        .btn-info {
+            background-color: var(--info);
+            border: none;
+        }
+
+        /* Tables */
+        .table th {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+        
+        /* Stage Status */
+        .stage-status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .stage-active {
+            background-color: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid var(--success);
+        }
+        
+        .stage-upcoming {
+            background-color: rgba(241, 196, 15, 0.1);
+            border-left: 4px solid var(--warning);
+        }
+        
+        .stage-completed {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid var(--info);
+        }
+        
+        /* Participant Cards */
+        .participant-card {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .participant-card:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .participant-card.checked-in {
+            border-left: 4px solid var(--success);
+        }
+        
+        .participant-card.pending {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .code-letter {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            background-color: var(--light);
+            padding: 0.5rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Badges */
+        .badge-primary {
+            background-color: var(--primary);
+        }
+        
+        .badge-success {
+            background-color: var(--success);
+        }
+        
+        .badge-warning {
+            background-color: var(--warning);
+            color: #333;
+        }
+        
+        .badge-info {
+            background-color: var(--info);
+        }
+        
+        .badge-danger {
+            background-color: var(--secondary);
+        }
+        
+        /* Loading animation */
+        .btn-loading {
+            position: relative;
+        }
+        
+        .btn-loading .btn-text {
+            visibility: visible;
+        }
+        
+        .btn-loading.loading .btn-text {
+            visibility: hidden;
+        }
+        
+        .btn-loading.loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: button-loading-spinner 1s ease infinite;
+        }
+        
+        @keyframes button-loading-spinner {
+            from {
+                transform: rotate(0turn);
+            }
+            to {
+                transform: rotate(1turn);
+            }
+        }
+        
+        /* Dashboard Sections */
+        .dashboard-section {
+            display: none;
+        }
+        
+        .dashboard-section.active {
+            display: block;
+        }
+        
+        /* Status indicators */
+        .status-active {
+            color: var(--success);
+        }
+        
+        .status-pending {
+            color: var(--warning);
+        }
+        
+        .status-completed {
+            color: var(--info);
+        }
+        
+        /* Real-time updates */
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar .nav-link span,
+            .sidebar-header h4,
+            .sidebar-header small {
+                display: none;
+            }
+            
+            .sidebar .nav-link {
+                text-align: center;
+                padding: 0.8rem 0.5rem;
+            }
+            
+            .sidebar .nav-link i {
+                margin-right: 0;
+            }
+            
+            .content {
+                margin-left: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header text-center">
+            <h4><i class="fas fa-users-cog me-2"></i>Stage Controller</h4>
+            <small class="text-muted">UniFest 2026</small>
+        </div>
+        <nav class="nav flex-column">
+            <a href="#" class="nav-link active" data-section="dashboard">
+                <i class="fas fa-home me-2"></i><span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-link" data-section="stage-management">
+                <i class="fas fa-desktop me-2"></i><span>Stage Management</span>
+            </a>
+            <a href="#" class="nav-link" data-section="checkin">
+                <i class="fas fa-user-check me-2"></i><span>Participant Check-in</span>
+            </a>
+            <a href="#" class="nav-link" data-section="code-assignment">
+                <i class="fas fa-id-card me-2"></i><span>Code Assignment</span>
+            </a>
+            <a href="#" class="nav-link" data-section="schedule">
+                <i class="fas fa-calendar-alt me-2"></i><span>Schedule</span>
+            </a>
+            <div class="mt-auto">
+                <a href="../index.php" class="nav-link text-danger">
+                    <i class="fas fa-sign-out-alt me-2"></i><span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom rounded">
+            <div class="container-fluid">
+                <h4 class="mb-0 text-dark" id="pageTitle">
+                    <i class="fas fa-users-cog me-2"></i>Stage Controller Dashboard
+                </h4>
+                <div class="navbar-text">
+                    <span class="text-muted">Welcome,</span> 
+                    <strong>Rajesh Kumar</strong>
+                    <span class="badge bg-primary ms-2">Stage 1 Controller</span>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="dashboard-section active">
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="stat-number">42</div>
+                        <div class="stat-label">Participants Today</div>
+                        <small class="text-success">+8 checked in</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Active Competitions</div>
+                        <small class="text-info">1 ongoing</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="stat-number">28</div>
+                        <div class="stat-label">Codes Assigned</div>
+                        <small class="text-warning">5 pending</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="stat-number">92%</div>
+                        <div class="stat-label">Check-in Rate</div>
+                        <small class="text-success">Excellent</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="showSection('checkin')">
+                                        <i class="fas fa-user-check me-2"></i>Check-in Participants
+                                    </button>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <button class="btn btn-success w-100 mb-2" onclick="showSection('code-assignment')">
+                                        <i class="fas fa-id-card me-2"></i>Assign Codes
+                                    </button>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <button class="btn btn-warning w-100 mb-2" onclick="showSection('stage-management')">
+                                        <i class="fas fa-desktop me-2"></i>Manage Stage
+                                    </button>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <button class="btn btn-info w-100 mb-2" onclick="showSection('schedule')">
+                                        <i class="fas fa-clock me-2"></i>View Schedule
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage Status & Live Updates -->
+            <div class="row">
+                <!-- Stage Status -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-desktop me-2"></i>Stage Status</h5>
+                            <span class="badge bg-success"><span class="live-indicator"></span>LIVE</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="stage-status stage-active">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-1">Stage 1 - Main Auditorium</h5>
+                                        <p class="mb-1"><strong>Current:</strong> Code Marathon - Round 2</p>
+                                        <p class="mb-0"><strong>Next:</strong> Battle of Bands (in 45 mins)</p>
+                                    </div>
+                                    <span class="badge bg-success fs-6">ACTIVE</span>
+                                </div>
+                                <div class="progress mt-2">
+                                    <div class="progress-bar bg-success" style="width: 65%">65% Complete</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stage-status stage-upcoming">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Stage 2 - Open Air Theater</h6>
+                                        <p class="mb-0"><strong>Next:</strong> Dance Competition (starts in 30 mins)</p>
+                                    </div>
+                                    <span class="badge bg-warning">UPCOMING</span>
+                                </div>
+                            </div>
+                            
+                            <div class="stage-status stage-completed">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Stage 3 - Seminar Hall</h6>
+                                        <p class="mb-0"><strong>Completed:</strong> Debate Competition</p>
+                                    </div>
+                                    <span class="badge bg-info">COMPLETED</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Participant Updates -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-users me-2"></i>Live Participant Updates</h5>
+                            <span class="badge bg-danger">5 pending check-in</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Participant <span class="badge bg-primary">C-07</span></h6>
+                                            <small class="text-muted">Code Marathon - Currently presenting</small>
+                                        </div>
+                                        <span class="badge bg-success">On Stage</span>
+                                    </div>
+                                    <div class="progress mt-2">
+                                        <div class="progress-bar bg-success" style="width: 75%">15 min remaining</div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Participant <span class="badge bg-primary">C-09</span></h6>
+                                            <small class="text-muted">Code Marathon - Next in queue</small>
+                                        </div>
+                                        <span class="badge bg-warning">Ready Backstage</span>
+                                    </div>
+                                </div>
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Participant <span class="badge bg-primary">D-03</span></h6>
+                                            <small class="text-muted">Dance Competition - Checked in</small>
+                                        </div>
+                                        <span class="badge bg-info">Awaiting Schedule</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Schedule -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Today's Schedule - Stage 1</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Competition</th>
+                                            <th>Participants</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <strong>9:00 - 12:00</strong>
+                                            </td>
+                                            <td>
+                                                <strong>Code Marathon - Round 2</strong>
+                                                <br><small class="text-muted">Technical Competition</small>
+                                            </td>
+                                            <td>10 participants</td>
+                                            <td><span class="badge bg-success">Live</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">Manage</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>13:00 - 16:00</strong>
+                                            </td>
+                                            <td>
+                                                <strong>Battle of Bands</strong>
+                                                <br><small class="text-muted">Cultural Competition</small>
+                                            </td>
+                                            <td>8 bands</td>
+                                            <td><span class="badge bg-warning">Upcoming</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-secondary">Prepare</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>17:00 - 19:00</strong>
+                                            </td>
+                                            <td>
+                                                <strong>Dance Competition - Finals</strong>
+                                                <br><small class="text-muted">Cultural Competition</small>
+                                            </td>
+                                            <td>6 participants</td>
+                                            <td><span class="badge bg-info">Scheduled</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-secondary">Prepare</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage Management Section -->
+        <div id="stage-management" class="dashboard-section">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-desktop me-2"></i>Stage Management - Stage 1</h5>
+                    <div>
+                        <span class="badge bg-success me-2"><span class="live-indicator"></span>LIVE</span>
+                        <span class="badge bg-primary">Code Marathon</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">Current Competition: Code Marathon - Round 2</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <div class="d-flex justify-content-between">
+                                                <span><strong>Start Time:</strong></span>
+                                                <span>9:00 AM</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span><strong>End Time:</strong></span>
+                                                <span>12:00 PM</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span><strong>Duration:</strong></span>
+                                                <span>3 hours</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="d-flex justify-content-between">
+                                                <span><strong>Participants:</strong></span>
+                                                <span>10/10</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span><strong>Completed:</strong></span>
+                                                <span>6/10</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span><strong>Current:</strong></span>
+                                                <span>Participant C-07</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="progress mb-4" style="height: 20px;">
+                                        <div class="progress-bar bg-success" style="width: 65%">
+                                            <strong>65% Complete</strong>
+                                        </div>
+                                    </div>
+                                    
+                                    <h5 class="mb-3">Participant Queue</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Queue</th>
+                                                    <th>Code</th>
+                                                    <th>Status</th>
+                                                    <th>Time Slot</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="table-success">
+                                                    <td>Current</td>
+                                                    <td><span class="badge bg-primary fs-6">C-07</span></td>
+                                                    <td><span class="badge bg-success">On Stage</span></td>
+                                                    <td>10:30 - 10:45</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-warning">Mark Complete</button>
+                                                    </td>
+                                                </tr>
+                                                <tr class="table-warning">
+                                                    <td>Next</td>
+                                                    <td><span class="badge bg-primary fs-6">C-09</span></td>
+                                                    <td><span class="badge bg-warning">Ready Backstage</span></td>
+                                                    <td>10:45 - 11:00</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-success">Call to Stage</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3</td>
+                                                    <td><span class="badge bg-primary fs-6">C-04</span></td>
+                                                    <td><span class="badge bg-info">Checked In</span></td>
+                                                    <td>11:00 - 11:15</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary">Prepare</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>4</td>
+                                                    <td><span class="badge bg-primary fs-6">C-01</span></td>
+                                                    <td><span class="badge bg-info">Checked In</span></td>
+                                                    <td>11:15 - 11:30</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary">Prepare</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Stage Controls</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-grid gap-2 mb-3">
+                                        <button class="btn btn-success">
+                                            <i class="fas fa-play me-2"></i>Start Competition
+                                        </button>
+                                        <button class="btn btn-warning">
+                                            <i class="fas fa-pause me-2"></i>Pause Competition
+                                        </button>
+                                        <button class="btn btn-danger">
+                                            <i class="fas fa-stop me-2"></i>End Competition
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Stage Announcement</label>
+                                        <textarea class="form-control" rows="3" placeholder="Make an announcement to participants..."></textarea>
+                                        <button class="btn btn-info mt-2 w-100">
+                                            <i class="fas fa-bullhorn me-2"></i>Make Announcement
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="alert alert-info">
+                                        <h6><i class="fas fa-info-circle me-2"></i>Quick Actions</h6>
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-sm btn-outline-primary">Call Next Participant</button>
+                                            <button class="btn btn-sm btn-outline-warning">Add Time Extension</button>
+                                            <button class="btn btn-sm btn-outline-info">Technical Break</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Next Competition</h6>
+                                </div>
+                                <div class="card-body">
+                                    <h6>Battle of Bands</h6>
+                                    <p class="small mb-2"><strong>Starts:</strong> 1:00 PM</p>
+                                    <p class="small mb-2"><strong>Participants:</strong> 8 bands</p>
+                                    <p class="small mb-0"><strong>Duration:</strong> 3 hours</p>
+                                    <button class="btn btn-sm btn-outline-primary mt-2 w-100">Prepare Stage</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Participant Check-in Section -->
+        <div id="checkin" class="dashboard-section">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-user-check me-2"></i>Participant Check-in</h5>
+                    <div>
+                        <span class="badge bg-primary me-2">Stage 1</span>
+                        <span class="badge bg-success">Code Marathon</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Quick Check-in</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form id="quickCheckinForm">
+                                        <div class="mb-3">
+                                            <label class="form-label">Participant ID or Registration Number</label>
+                                            <input type="text" class="form-control" placeholder="Enter ID or scan barcode" id="participantId">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Competition</label>
+                                            <select class="form-select" id="checkinCompetition">
+                                                <option value="code_marathon">Code Marathon</option>
+                                                <option value="battle_bands">Battle of Bands</option>
+                                                <option value="dance">Dance Competition</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="fas fa-check-circle me-2"></i>Check-in Participant
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Check-in Statistics</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Total Participants:</span>
+                                        <span class="fw-bold">42</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Checked In:</span>
+                                        <span class="fw-bold text-success">38</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Pending Check-in:</span>
+                                        <span class="fw-bold text-warning">4</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Check-in Rate:</span>
+                                        <span class="fw-bold text-info">90.5%</span>
+                                    </div>
+                                    <div class="progress mt-3">
+                                        <div class="progress-bar bg-success" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mb-3">Participants - Code Marathon</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="participant-card checked-in">
+                                <div class="code-letter">C-07</div>
+                                <p class="mb-1"><strong>Status:</strong> <span class="badge bg-success">Checked In</span></p>
+                                <p class="mb-1"><strong>Time:</strong> 9:15 AM</p>
+                                <p class="mb-0"><strong>Queue:</strong> Current</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="participant-card checked-in">
+                                <div class="code-letter">C-09</div>
+                                <p class="mb-1"><strong>Status:</strong> <span class="badge bg-success">Checked In</span></p>
+                                <p class="mb-1"><strong>Time:</strong> 9:20 AM</p>
+                                <p class="mb-0"><strong>Queue:</strong> Next</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="participant-card checked-in">
+                                <div class="code-letter">C-04</div>
+                                <p class="mb-1"><strong>Status:</strong> <span class="badge bg-success">Checked In</span></p>
+                                <p class="mb-1"><strong>Time:</strong> 9:25 AM</p>
+                                <p class="mb-0"><strong>Queue:</strong> 3</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="participant-card pending">
+                                <div class="code-letter">C-02</div>
+                                <p class="mb-1"><strong>Status:</strong> <span class="badge bg-warning">Pending</span></p>
+                                <p class="mb-1"><strong>Time:</strong> -</p>
+                                <p class="mb-0"><strong>Queue:</strong> -</p>
+                                <button class="btn btn-sm btn-success mt-2 w-100">Check In</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Assignment Section -->
+        <div id="code-assignment" class="dashboard-section">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-id-card me-2"></i>Code Assignment</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Assign Anonymous Codes</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form id="codeAssignmentForm">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Competition</label>
+                                                <select class="form-select" id="competitionSelect" required>
+                                                    <option value="">Select Competition</option>
+                                                    <option value="code_marathon">Code Marathon</option>
+                                                    <option value="battle_bands">Battle of Bands</option>
+                                                    <option value="dance">Dance Competition</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Participant</label>
+                                                <select class="form-select" id="participantSelect" required>
+                                                    <option value="">Select Participant</option>
+                                                    <option value="p1">Rajesh Kumar (ABC2026001)</option>
+                                                    <option value="p2">Priya Sharma (ABC2026002)</option>
+                                                    <option value="p3">Amit Patel (ABC2026003)</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Code Letter</label>
+                                                <select class="form-select" id="codeLetterSelect" required>
+                                                    <option value="">Select Code</option>
+                                                    <option value="C-01">C-01</option>
+                                                    <option value="C-02">C-02</option>
+                                                    <option value="C-03">C-03</option>
+                                                    <option value="C-04">C-04</option>
+                                                    <option value="C-05">C-05</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Status</label>
+                                                <input type="text" class="form-control" value="Available" readonly>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-id-card me-2"></i>Assign Code to Participant
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Code Assignment Status</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <h6>Code Marathon</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Assigned:</span>
+                                            <span class="fw-bold">8/10</span>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar bg-success" style="width: 80%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6>Battle of Bands</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Assigned:</span>
+                                            <span class="fw-bold">5/8</span>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar bg-warning" style="width: 63%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6>Dance Competition</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Assigned:</span>
+                                            <span class="fw-bold">3/6</span>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar bg-info" style="width: 50%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mb-3">Assigned Codes - Code Marathon</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Participant</th>
+                                    <th>College</th>
+                                    <th>Assigned Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-primary fs-6">C-07</span></td>
+                                    <td>Rajesh Kumar</td>
+                                    <td>ABC College</td>
+                                    <td>Mar 15, 8:30 AM</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning">Reassign</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-primary fs-6">C-09</span></td>
+                                    <td>Priya Sharma</td>
+                                    <td>ABC College</td>
+                                    <td>Mar 15, 8:35 AM</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning">Reassign</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-primary fs-6">C-04</span></td>
+                                    <td>Amit Patel</td>
+                                    <td>ABC College</td>
+                                    <td>Mar 15, 8:40 AM</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning">Reassign</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Section -->
+        <div id="schedule" class="dashboard-section">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-calendar-alt me-2"></i>Competition Schedule</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <ul class="nav nav-tabs" id="scheduleTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#today" type="button">Today</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tomorrow" type="button">Tomorrow</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#week" type="button">This Week</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content mt-3">
+                                <div class="tab-pane fade show active" id="today">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Time</th>
+                                                    <th>Stage</th>
+                                                    <th>Competition</th>
+                                                    <th>Participants</th>
+                                                    <th>Status</th>
+                                                    <th>Controller</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>9:00 - 12:00</td>
+                                                    <td>Stage 1</td>
+                                                    <td>Code Marathon - Round 2</td>
+                                                    <td>10</td>
+                                                    <td><span class="badge bg-success">Live</span></td>
+                                                    <td>Rajesh Kumar</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>13:00 - 16:00</td>
+                                                    <td>Stage 1</td>
+                                                    <td>Battle of Bands</td>
+                                                    <td>8</td>
+                                                    <td><span class="badge bg-warning">Upcoming</span></td>
+                                                    <td>Rajesh Kumar</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>10:00 - 13:00</td>
+                                                    <td>Stage 2</td>
+                                                    <td>Dance Competition - Prelims</td>
+                                                    <td>12</td>
+                                                    <td><span class="badge bg-success">Live</span></td>
+                                                    <td>Priya Sharma</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="tomorrow">
+                                    <!-- Tomorrow's schedule content -->
+                                </div>
+                                <div class="tab-pane fade" id="week">
+                                    <!-- Week schedule content -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">My Schedule - Stage 1</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="list-group">
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">Code Marathon</h6>
+                                                <small>9:00 AM - 12:00 PM</small>
+                                            </div>
+                                            <span class="badge bg-success">Live</span>
+                                        </div>
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">Battle of Bands</h6>
+                                                <small>1:00 PM - 4:00 PM</small>
+                                            </div>
+                                            <span class="badge bg-warning">Next</span>
+                                        </div>
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">Dance Competition</h6>
+                                                <small>5:00 PM - 7:00 PM</small>
+                                            </div>
+                                            <span class="badge bg-info">Scheduled</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Quick Notes</h6>
+                                </div>
+                                <div class="card-body">
+                                    <textarea class="form-control" rows="5" placeholder="Add notes for today's events..."></textarea>
+                                    <button class="btn btn-sm btn-primary mt-2 w-100">Save Notes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Section Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+            
+            // Update page title
+            const pageTitle = document.getElementById('pageTitle');
+            const sectionTitles = {
+                'dashboard': 'Stage Controller Dashboard',
+                'stage-management': 'Stage Management',
+                'checkin': 'Participant Check-in',
+                'code-assignment': 'Code Assignment',
+                'schedule': 'Competition Schedule'
+            };
+            pageTitle.innerHTML = `<i class="fas fa-users-cog me-2"></i>${sectionTitles[sectionId]}`;
+        }
+
+        // Initialize navigation and functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up nav link click events
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.getAttribute('data-section');
+                    showSection(section);
+                });
+            });
+
+            // Quick check-in form
+            document.getElementById('quickCheckinForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const participantId = document.getElementById('participantId').value;
+                const competition = document.getElementById('checkinCompetition').value;
+                
+                if (!participantId) {
+                    alert('Please enter a participant ID');
+                    return;
+                }
+                
+                // Simulate check-in process
+                alert(`Participant ${participantId} checked in successfully for ${competition}!`);
+                document.getElementById('participantId').value = '';
+            });
+            
+            // Code assignment form
+            document.getElementById('codeAssignmentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const competition = document.getElementById('competitionSelect').value;
+                const participant = document.getElementById('participantSelect').value;
+                const code = document.getElementById('codeLetterSelect').value;
+                
+                if (!competition || !participant || !code) {
+                    alert('Please fill all fields');
+                    return;
+                }
+                
+                // Simulate code assignment
+                alert(`Code ${code} assigned successfully!`);
+                this.reset();
+            });
+            
+            // Simulate real-time updates
+            setInterval(() => {
+                // This would typically fetch data from server in a real application
+                console.log('Checking for updates...');
+            }, 30000); // Check every 30 seconds
+        });
+    </script>
+</body>
+</html>
