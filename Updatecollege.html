@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Admin Dashboard - UniFest 2026</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --secondary: #E74C3C;
+            --accent: #F39C12;
+            --success: #27AE60;
+            --warning: #F1C40F;
+            --info: #3498DB;
+            --light: #ECF0F1;
+            --dark: #2C3E50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(to bottom, var(--primary), #1a252f);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            padding-top: 1rem;
+            box-shadow: 3px 0 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.8rem 1.5rem;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+            margin: 2px 0;
+        }
+
+        .sidebar .nav-link.active, 
+        .sidebar .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--accent);
+            color: white;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+        }
+
+        /* Main Content */
+        .content {
+            margin-left: 250px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            border-radius: 10px;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        /* Progress Bars */
+        .progress {
+            height: 8px;
+            margin: 5px 0;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #1a252f;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            border: none;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            border: none;
+            color: #333;
+        }
+
+        .btn-info {
+            background-color: var(--info);
+            border: none;
+        }
+
+        /* Tables */
+        .table th {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+        
+        /* Improved Quick Actions */
+        .quick-actions .btn {
+            padding: 0.75rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Form Sections */
+        .form-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Tabs */
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+        
+        /* Badges */
+        .badge-primary {
+            background-color: var(--primary);
+        }
+        
+        .badge-success {
+            background-color: var(--success);
+        }
+        
+        .badge-warning {
+            background-color: var(--warning);
+            color: #333;
+        }
+        
+        .badge-info {
+            background-color: var(--info);
+        }
+        
+        .badge-danger {
+            background-color: var(--secondary);
+        }
+        
+        /* Loading animation */
+        .btn-loading {
+            position: relative;
+        }
+        
+        .btn-loading .btn-text {
+            visibility: visible;
+        }
+        
+        .btn-loading.loading .btn-text {
+            visibility: hidden;
+        }
+        
+        .btn-loading.loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: button-loading-spinner 1s ease infinite;
+        }
+        
+        @keyframes button-loading-spinner {
+            from {
+                transform: rotate(0turn);
+            }
+            to {
+                transform: rotate(1turn);
+            }
+        }
+        
+        /* Dashboard Sections */
+        .dashboard-section {
+            display: none;
+        }
+        
+        .dashboard-section.active {
+            display: block;
+        }
+        
+        /* Status indicators */
+        .status-active {
+            color: var(--success);
+        }
+        
+        .status-pending {
+            color: var(--warning);
+        }
+        
+        .status-completed {
+            color: var(--info);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar .nav-link span,
+            .sidebar-header h4,
+            .sidebar-header small {
+                display: none;
+            }
+            
+            .sidebar .nav-link {
+                text-align: center;
+                padding: 0.8rem 0.5rem;
+            }
+            
+            .sidebar .nav-link i {
+                margin-right: 0;
+            }
+            
+            .content {
+                margin-left: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header text-center">
+            <h4><i class="fas fa-university me-2"></i>College Admin</h4>
+            <small class="text-muted">UniFest 2026</small>
+        </div>
+        <nav class="nav flex-column">
+            <a href="#" class="nav-link active" data-section="dashboard">
+                <i class="fas fa-home me-2"></i><span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-link" data-section="students">
+                <i class="fas fa-user-graduate me-2"></i><span>Student Management</span>
+            </a>
+            <a href="#" class="nav-link" data-section="competitions">
+                <i class="fas fa-trophy me-2"></i><span>Competitions</span>
+            </a>
+            <a href="#" class="nav-link" data-section="registrations">
+                <i class="fas fa-clipboard-list me-2"></i><span>Registrations</span>
+            </a>
+            <a href="#" class="nav-link" data-section="results">
+                <i class="fas fa-chart-line me-2"></i><span>Results</span>
+            </a>
+            <div class="mt-auto">
+                <a href="../index.php" class="nav-link text-danger">
+                    <i class="fas fa-sign-out-alt me-2"></i><span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom rounded">
+            <div class="container-fluid">
+                <h4 class="mb-0 text-dark" id="pageTitle">
+                    <i class="fas fa-university me-2"></i>College Admin Dashboard
+                </h4>
+                <div class="navbar-text">
+                    <span class="text-muted">Welcome,</span> 
+                    <strong>ABC College Admin</strong>
+                    <span class="badge bg-primary ms-2">College Admin</span>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="dashboard-section active">
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="stat-number">45</div>
+                        <div class="stat-label">Total Students</div>
+                        <small class="text-success">All registered</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="stat-number">18</div>
+                        <div class="stat-label">Active Competitions</div>
+                        <small class="text-info">8 ongoing</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="stat-number">32</div>
+                        <div class="stat-label">Registrations</div>
+                        <small class="text-warning">5 pending approval</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="stat-number">7</div>
+                        <div class="stat-label">Awards Won</div>
+                        <small class="text-success">+2 this week</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                        </div>
+                        <div class="card-body quick-actions">
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <button class="btn btn-primary w-100 mb-2" onclick="showSection('students')">
+                                        <i class="fas fa-user-plus me-2"></i>Add Student
+                                    </button>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <button class="btn btn-success w-100 mb-2" onclick="showSection('competitions')">
+                                        <i class="fas fa-trophy me-2"></i>Register for Competition
+                                    </button>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <button class="btn btn-warning w-100 mb-2" onclick="showSection('registrations')">
+                                        <i class="fas fa-clipboard-check me-2"></i>Approve Registrations
+                                    </button>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <button class="btn btn-info w-100 mb-2" onclick="showSection('results')">
+                                        <i class="fas fa-medal me-2"></i>View Results
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity & Live Updates -->
+            <div class="row">
+                <!-- Recent Student Registrations -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-user-graduate me-2"></i>Recent Student Registrations</h5>
+                            <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Rajesh Kumar</h6>
+                                        <small class="text-muted">ID: ABC2026001 | Registered: Today</small>
+                                    </div>
+                                    <span class="badge bg-success">Active</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Priya Sharma</h6>
+                                        <small class="text-muted">ID: ABC2026002 | Registered: 2 days ago</small>
+                                    </div>
+                                    <span class="badge bg-success">Active</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Amit Patel</h6>
+                                        <small class="text-muted">ID: ABC2026003 | Registered: 1 week ago</small>
+                                    </div>
+                                    <span class="badge bg-warning">Pending Documents</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Competition Updates -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-running me-2"></i>Live Competition Updates</h5>
+                            <span class="badge bg-danger">3 ongoing</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Code Marathon</h6>
+                                            <small class="text-muted">2 students participating</small>
+                                        </div>
+                                        <span class="badge bg-success">Live</span>
+                                    </div>
+                                    <div class="progress mt-2">
+                                        <div class="progress-bar bg-success" style="width: 75%">75% Complete</div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Battle of Bands</h6>
+                                            <small class="text-muted">Performance in progress</small>
+                                        </div>
+                                        <span class="badge bg-warning">On Stage</span>
+                                    </div>
+                                    <div class="progress mt-2">
+                                        <div class="progress-bar bg-warning" style="width: 40%">40% Complete</div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">Dance Competition</h6>
+                                            <small class="text-muted">Starting in 15 mins</small>
+                                        </div>
+                                        <span class="badge bg-info">Upcoming</span>
+                                    </div>
+                                    <div class="progress mt-2">
+                                        <div class="progress-bar bg-info" style="width: 10%">10% Complete</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Performance -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Student Performance Overview</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Student Name</th>
+                                            <th>Competition</th>
+                                            <th>Status</th>
+                                            <th>Current Score</th>
+                                            <th>Rank</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <strong>Rajesh Kumar</strong>
+                                                <br><small class="text-muted">ID: ABC2026001</small>
+                                            </td>
+                                            <td>Code Marathon</td>
+                                            <td><span class="badge bg-success">Active</span></td>
+                                            <td>85/100</td>
+                                            <td>2</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>Priya Sharma</strong>
+                                                <br><small class="text-muted">ID: ABC2026002</small>
+                                            </td>
+                                            <td>Battle of Bands</td>
+                                            <td><span class="badge bg-warning">On Stage</span></td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>Amit Patel</strong>
+                                                <br><small class="text-muted">ID: ABC2026003</small>
+                                            </td>
+                                            <td>Dance Competition</td>
+                                            <td><span class="badge bg-info">Upcoming</span></td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Management Section -->
+        <div id="students" class="dashboard-section">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-user-graduate me-2"></i>Student Management</h5>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                        <i class="fas fa-user-plus me-1"></i>Add New Student
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="form-section">
+                        <h6>Add New Student</h6>
+                        <form id="addStudentForm">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" name="name" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Student ID</label>
+                                    <input type="text" class="form-control" name="student_id" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Department</label>
+                                    <select class="form-select" name="department" required>
+                                        <option value="">Select Department</option>
+                                        <option value="cse">Computer Science</option>
+                                        <option value="ece">Electronics</option>
+                                        <option value="mech">Mechanical</option>
+                                        <option value="civil">Civil</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Year</label>
+                                    <select class="form-select" name="year" required>
+                                        <option value="">Select Year</option>
+                                        <option value="1">1st Year</option>
+                                        <option value="2">2nd Year</option>
+                                        <option value="3">3rd Year</option>
+                                        <option value="4">4th Year</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Contact Number</label>
+                                    <input type="tel" class="form-control" name="contact">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-user-plus me-1"></i>Add Student
+                            </button>
+                        </form>
+                    </div>
+
+                    <h6>Existing Students</h6>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Year</th>
+                                    <th>Competitions</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>ABC2026001</td>
+                                    <td>Rajesh Kumar</td>
+                                    <td>Computer Science</td>
+                                    <td>3rd Year</td>
+                                    <td>2</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning">Edit</button>
+                                        <button class="btn btn-sm btn-info">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ABC2026002</td>
+                                    <td>Priya Sharma</td>
+                                    <td>Electronics</td>
+                                    <td>2nd Year</td>
+                                    <td>1</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning">Edit</button>
+                                        <button class="btn btn-sm btn-info">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ABC2026003</td>
+                                    <td>Amit Patel</td>
+                                    <td>Mechanical</td>
+                                    <td>4th Year</td>
+                                    <td>1</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning">Edit</button>
+                                        <button class="btn btn-sm btn-info">View Details</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Competitions Section -->
+        <div id="competitions" class="dashboard-section">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-trophy me-2"></i>Competition Registration</h5>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registerCompetitionModal">
+                        <i class="fas fa-plus me-1"></i>Register for Competition
+                    </button>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="competitionTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#available" type="button">Available Competitions</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#registered" type="button">Registered</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#completed" type="button">Completed</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content mt-3">
+                        <div class="tab-pane fade show active" id="available">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Competition</th>
+                                            <th>Category</th>
+                                            <th>Date & Time</th>
+                                            <th>Max Participants</th>
+                                            <th>Available Slots</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <strong>Code Marathon</strong>
+                                                <br><small class="text-muted">Solve coding challenges in 3 hours</small>
+                                            </td>
+                                            <td><span class="badge bg-info">Technical</span></td>
+                                            <td>Mar 15, 2026<br><small>10:00 AM - 1:00 PM</small></td>
+                                            <td>30</td>
+                                            <td>5</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">Register</button>
+                                                <button class="btn btn-sm btn-outline-info">Details</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>Battle of Bands</strong>
+                                                <br><small class="text-muted">Music band competition</small>
+                                            </td>
+                                            <td><span class="badge bg-success">Cultural</span></td>
+                                            <td>Mar 16, 2026<br><small>2:00 PM - 5:00 PM</small></td>
+                                            <td>15</td>
+                                            <td>3</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">Register</button>
+                                                <button class="btn btn-sm btn-outline-info">Details</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="registered">
+                            <!-- Registered competitions content -->
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Competition</th>
+                                            <th>Participants</th>
+                                            <th>Status</th>
+                                            <th>Schedule</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Code Marathon</td>
+                                            <td>Rajesh Kumar, Amit Patel</td>
+                                            <td><span class="badge bg-warning">Approval Pending</span></td>
+                                            <td>Mar 15, 2026</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-warning">Edit</button>
+                                            <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="completed">
+                            <!-- Completed competitions content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registrations Section -->
+        <div id="registrations" class="dashboard-section">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-clipboard-list me-2"></i>Registration Management</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Registration ID</th>
+                                    <th>Student</th>
+                                    <th>Competition</th>
+                                    <th>Registration Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>REG001</td>
+                                    <td>Rajesh Kumar (ABC2026001)</td>
+                                    <td>Code Marathon</td>
+                                    <td>Mar 10, 2026</td>
+                                    <td><span class="badge bg-warning">Pending Approval</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-success">Approve</button>
+                                        <button class="btn btn-sm btn-danger">Reject</button>
+                                        <button class="btn btn-sm btn-info">Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>REG002</td>
+                                    <td>Priya Sharma (ABC2026002)</td>
+                                    <td>Battle of Bands</td>
+                                    <td>Mar 9, 2026</td>
+                                    <td><span class="badge bg-success">Approved</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning">Revoke</button>
+                                        <button class="btn btn-sm btn-info">Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>REG003</td>
+                                    <td>Amit Patel (ABC2026003)</td>
+                                    <td>Dance Competition</td>
+                                    <td>Mar 8, 2026</td>
+                                    <td><span class="badge bg-danger">Rejected</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info">Details</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="dashboard-section">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-line me-2"></i>Results & Performance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>College Performance Overview</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="resultsChart" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Awards & Achievements</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="list-group">
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">Code Marathon</h6>
+                                                <small>Rajesh Kumar - 2nd Place</small>
+                                            </div>
+                                            <span class="badge bg-warning">Silver</span>
+                                        </div>
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">Debate Competition</h6>
+                                                <small>Priya Sharma - 1st Place</small>
+                                            </div>
+                                            <span class="badge bg-warning">Gold</span>
+                                        </div>
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">Poster Presentation</h6>
+                                                <small>Amit Patel - 3rd Place</small>
+                                            </div>
+                                            <span class="badge bg-warning">Bronze</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Detailed Results</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Competition</th>
+                                                    <th>Student</th>
+                                                    <th>Score</th>
+                                                    <th>Rank</th>
+                                                    <th>Award</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Code Marathon</td>
+                                                    <td>Rajesh Kumar</td>
+                                                    <td>85/100</td>
+                                                    <td>2</td>
+                                                    <td>Silver Medal</td>
+                                                    <td><span class="badge bg-success">Completed</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Debate Competition</td>
+                                                    <td>Priya Sharma</td>
+                                                    <td>92/100</td>
+                                                    <td>1</td>
+                                                    <td>Gold Medal</td>
+                                                    <td><span class="badge bg-success">Completed</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Poster Presentation</td>
+                                                    <td>Amit Patel</td>
+                                                    <td>78/100</td>
+                                                    <td>3</td>
+                                                    <td>Bronze Medal</td>
+                                                    <td><span class="badge bg-success">Completed</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Student Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Student</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStudentModalForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Student ID</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Department</label>
+                                <select class="form-select" required>
+                                    <option value="">Select Department</option>
+                                    <option value="cse">Computer Science</option>
+                                    <option value="ece">Electronics</option>
+                                    <option value="mech">Mechanical</option>
+                                    <option value="civil">Civil</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Year</label>
+                                <select class="form-select" required>
+                                    <option value="">Select Year</option>
+                                    <option value="1">1st Year</option>
+                                    <option value="2">2nd Year</option>
+                                    <option value="3">3rd Year</option>
+                                    <option value="4">4th Year</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Contact Number</label>
+                                <input type="tel" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Add Student</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register for Competition Modal -->
+    <div class="modal fade" id="registerCompetitionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Register for Competition</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerCompetitionForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Select Competition</label>
+                                <select class="form-select" required>
+                                    <option value="">Select Competition</option>
+                                    <option value="code_marathon">Code Marathon</option>
+                                    <option value="battle_bands">Battle of Bands</option>
+                                    <option value="dance">Dance Competition</option>
+                                    <option value="debate">Debate Competition</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Select Students</label>
+                                <select class="form-select" multiple required>
+                                    <option value="ABC2026001">Rajesh Kumar</option>
+                                    <option value="ABC2026002">Priya Sharma</option>
+                                    <option value="ABC2026003">Amit Patel</option>
+                                </select>
+                                <small class="text-muted">Hold Ctrl to select multiple students</small>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Additional Notes (Optional)</label>
+                                <textarea class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success">Submit Registration</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Section Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+            
+            // Update page title
+            const pageTitle = document.getElementById('pageTitle');
+            const sectionTitles = {
+                'dashboard': 'College Admin Dashboard',
+                'students': 'Student Management',
+                'competitions': 'Competition Registration',
+                'registrations': 'Registration Management',
+                'results': 'Results & Performance'
+            };
+            pageTitle.innerHTML = `<i class="fas fa-university me-2"></i>${sectionTitles[sectionId]}`;
+        }
+
+        // Initialize navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up nav link click events
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.getAttribute('data-section');
+                    showSection(section);
+                });
+            });
+
+            // Initialize chart
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Technical', 'Cultural', 'Sports', 'Academic'],
+                    datasets: [{
+                        label: 'Participants',
+                        data: [12, 8, 5, 7],
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(155, 89, 182, 0.8)',
+                            'rgba(241, 196, 15, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Student Participation by Category'
+                        }
+                    }
+                }
+            });
+
+            // Form submissions
+            document.getElementById('addStudentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Student added successfully!');
+                this.reset();
+            });
+        });
+    </script>
+</body>
+</html>
