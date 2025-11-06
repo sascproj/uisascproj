@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judge Dashboard - UniFest 2026</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --secondary: #E74C3C;
+            --accent: #F39C12;
+            --success: #27AE60;
+            --warning: #F1C40F;
+            --info: #3498DB;
+            --light: #ECF0F1;
+            --dark: #2C3E50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(to bottom, var(--primary), #1a252f);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            padding-top: 1rem;
+            box-shadow: 3px 0 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.8rem 1.5rem;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+            margin: 2px 0;
+        }
+
+        .sidebar .nav-link.active, 
+        .sidebar .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--accent);
+            color: white;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+        }
+
+        /* Main Content */
+        .content {
+            margin-left: 250px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            border-radius: 10px;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        /* Progress Bars */
+        .progress {
+            height: 8px;
+            margin: 5px 0;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #1a252f;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            border: none;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            border: none;
+            color: #333;
+        }
+
+        .btn-info {
+            background-color: var(--info);
+            border: none;
+        }
+
+        /* Tables */
+        .table th {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+        
+        /* Evaluation Interface */
+        .evaluation-card {
+            border-left: 4px solid var(--accent);
+        }
+        
+        .code-letter {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            margin: 1rem 0;
+            background-color: var(--light);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .score-input {
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .criteria-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .criteria-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Badges */
+        .badge-primary {
+            background-color: var(--primary);
+        }
+        
+        .badge-success {
+            background-color: var(--success);
+        }
+        
+        .badge-warning {
+            background-color: var(--warning);
+            color: #333;
+        }
+        
+        .badge-info {
+            background-color: var(--info);
+        }
+        
+        .badge-danger {
+            background-color: var(--secondary);
+        }
+        
+        /* Loading animation */
+        .btn-loading {
+            position: relative;
+        }
+        
+        .btn-loading .btn-text {
+            visibility: visible;
+        }
+        
+        .btn-loading.loading .btn-text {
+            visibility: hidden;
+        }
+        
+        .btn-loading.loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: button-loading-spinner 1s ease infinite;
+        }
+        
+        @keyframes button-loading-spinner {
+            from {
+                transform: rotate(0turn);
+            }
+            to {
+                transform: rotate(1turn);
+            }
+        }
+        
+        /* Dashboard Sections */
+        .dashboard-section {
+            display: none;
+        }
+        
+        .dashboard-section.active {
+            display: block;
+        }
+        
+        /* Status indicators */
+        .status-active {
+            color: var(--success);
+        }
+        
+        .status-pending {
+            color: var(--warning);
+        }
+        
+        .status-completed {
+            color: var(--info);
+        }
+        
+        /* Evaluation progress */
+        .evaluation-progress {
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar .nav-link span,
+            .sidebar-header h4,
+            .sidebar-header small {
+                display: none;
+            }
+            
+            .sidebar .nav-link {
+                text-align: center;
+                padding: 0.8rem 0.5rem;
+            }
+            
+            .sidebar .nav-link i {
+                margin-right: 0;
+            }
+            
+            .content {
+                margin-left: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header text-center">
+            <h4><i class="fas fa-gavel me-2"></i>Judge Panel</h4>
+            <small class="text-muted">UniFest 2026</small>
+        </div>
+        <nav class="nav flex-column">
+            <a href="#" class="nav-link active" data-section="dashboard">
+                <i class="fas fa-home me-2"></i><span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-link" data-section="evaluations">
+                <i class="fas fa-clipboard-check me-2"></i><span>Evaluations</span>
+            </a>
+            <a href="#" class="nav-link" data-section="competitions">
+                <i class="fas fa-trophy me-2"></i><span>My Competitions</span>
+            </a>
+            <a href="#" class="nav-link" data-section="completed">
+                <i class="fas fa-check-circle me-2"></i><span>Completed</span>
+            </a>
+            <div class="mt-auto">
+                <a href="../index.php" class="nav-link text-danger">
+                    <i class="fas fa-sign-out-alt me-2"></i><span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom rounded">
+            <div class="container-fluid">
+                <h4 class="mb-0 text-dark" id="pageTitle">
+                    <i class="fas fa-gavel me-2"></i>Judge Dashboard
+                </h4>
+                <div class="navbar-text">
+                    <span class="text-muted">Welcome,</span> 
+                    <strong>Dr. Sharma</strong>
+                    <span class="badge bg-primary ms-2">Technical Judge</span>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="dashboard-section active">
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Assigned Competitions</div>
+                        <small class="text-success">All active</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="stat-number">24</div>
+                        <div class="stat-label">Participants to Evaluate</div>
+                        <small class="text-info">8 completed</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="stat-number">16</div>
+                        <div class="stat-label">Pending Evaluations</div>
+                        <small class="text-warning">Due soon</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card stat-card">
+                        <div class="stat-number">82%</div>
+                        <div class="stat-label">Evaluation Progress</div>
+                        <small class="text-success">On track</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Priority Evaluations -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-exclamation-circle me-2"></i>Priority Evaluations</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Competition</th>
+                                            <th>Participant Code</th>
+                                            <th>Time Remaining</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <strong>Code Marathon</strong>
+                                                <br><small class="text-muted">Round 2 - Algorithm Challenge</small>
+                                            </td>
+                                            <td><span class="badge bg-primary fs-6">C-07</span></td>
+                                            <td><span class="text-danger">15 minutes</span></td>
+                                            <td><span class="badge bg-warning">Evaluation Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary" onclick="showSection('evaluations')">Evaluate Now</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>Web Design Challenge</strong>
+                                                <br><small class="text-muted">UI/UX Evaluation</small>
+                                            </td>
+                                            <td><span class="badge bg-primary fs-6">W-12</span></td>
+                                            <td><span class="text-warning">45 minutes</span></td>
+                                            <td><span class="badge bg-warning">Evaluation Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary" onclick="showSection('evaluations')">Evaluate Now</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity & Evaluation Progress -->
+            <div class="row">
+                <!-- Recent Evaluations -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Evaluations</h5>
+                            <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Participant <span class="badge bg-primary">D-05</span></h6>
+                                        <small class="text-muted">Dance Competition | Score: 88/100</small>
+                                    </div>
+                                    <span class="badge bg-success">Completed</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Participant <span class="badge bg-primary">C-03</span></h6>
+                                        <small class="text-muted">Code Marathon | Score: 92/100</small>
+                                    </div>
+                                    <span class="badge bg-success">Completed</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Participant <span class="badge bg-primary">W-08</span></h6>
+                                        <small class="text-muted">Web Design | Score: 76/100</small>
+                                    </div>
+                                    <span class="badge bg-success">Completed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evaluation Progress -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>Evaluation Progress</h5>
+                            <span class="badge bg-primary">3 competitions</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="evaluation-progress">
+                                <h6>Code Marathon</h6>
+                                <div class="d-flex justify-content-between">
+                                    <small>8/10 participants evaluated</small>
+                                    <small>80%</small>
+                                </div>
+                                <div class="progress mt-1">
+                                    <div class="progress-bar bg-success" style="width: 80%"></div>
+                                </div>
+                            </div>
+                            <div class="evaluation-progress">
+                                <h6>Web Design Challenge</h6>
+                                <div class="d-flex justify-content-between">
+                                    <small>5/8 participants evaluated</small>
+                                    <small>63%</small>
+                                </div>
+                                <div class="progress mt-1">
+                                    <div class="progress-bar bg-warning" style="width: 63%"></div>
+                                </div>
+                            </div>
+                            <div class="evaluation-progress">
+                                <h6>Dance Competition</h6>
+                                <div class="d-flex justify-content-between">
+                                    <small>3/6 participants evaluated</small>
+                                    <small>50%</small>
+                                </div>
+                                <div class="progress mt-1">
+                                    <div class="progress-bar bg-info" style="width: 50%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluations Section -->
+        <div id="evaluations" class="dashboard-section">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-clipboard-check me-2"></i>Participant Evaluation</h5>
+                    <div>
+                        <span class="badge bg-primary me-2">Code Marathon</span>
+                        <span class="badge bg-warning">Round 2</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card evaluation-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Anonymous Participant Evaluation</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="code-letter">
+                                        Participant Code: <span class="text-primary">C-07</span>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <h6>Evaluation Criteria</h6>
+                                        <div class="criteria-item">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Code Efficiency & Optimization</span>
+                                                <span class="fw-bold">/25</span>
+                                            </div>
+                                            <input type="range" class="form-range" min="0" max="25" value="18" id="criteria1">
+                                            <div class="d-flex justify-content-between">
+                                                <small>0</small>
+                                                <small id="criteria1Value">18</small>
+                                                <small>25</small>
+                                            </div>
+                                        </div>
+                                        <div class="criteria-item">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Problem Solving Approach</span>
+                                                <span class="fw-bold">/25</span>
+                                            </div>
+                                            <input type="range" class="form-range" min="0" max="25" value="20" id="criteria2">
+                                            <div class="d-flex justify-content-between">
+                                                <small>0</small>
+                                                <small id="criteria2Value">20</small>
+                                                <small>25</small>
+                                            </div>
+                                        </div>
+                                        <div class="criteria-item">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Code Readability & Structure</span>
+                                                <span class="fw-bold">/20</span>
+                                            </div>
+                                            <input type="range" class="form-range" min="0" max="20" value="15" id="criteria3">
+                                            <div class="d-flex justify-content-between">
+                                                <small>0</small>
+                                                <small id="criteria3Value">15</small>
+                                                <small>20</small>
+                                            </div>
+                                        </div>
+                                        <div class="criteria-item">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Algorithm Complexity</span>
+                                                <span class="fw-bold">/20</span>
+                                            </div>
+                                            <input type="range" class="form-range" min="0" max="20" value="16" id="criteria4">
+                                            <div class="d-flex justify-content-between">
+                                                <small>0</small>
+                                                <small id="criteria4Value">16</small>
+                                                <small>20</small>
+                                            </div>
+                                        </div>
+                                        <div class="criteria-item">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Creativity & Innovation</span>
+                                                <span class="fw-bold">/10</span>
+                                            </div>
+                                            <input type="range" class="form-range" min="0" max="10" value="8" id="criteria5">
+                                            <div class="d-flex justify-content-between">
+                                                <small>0</small>
+                                                <small id="criteria5Value">8</small>
+                                                <small>10</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label for="overallScore" class="form-label fw-bold">Overall Score</label>
+                                        <input type="number" class="form-control score-input" id="overallScore" min="0" max="100" value="77" readonly>
+                                        <div class="form-text text-center">This score is calculated automatically based on criteria weights</div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label for="judgeComments" class="form-label fw-bold">Judge Comments</label>
+                                        <textarea class="form-control" id="judgeComments" rows="3" placeholder="Provide constructive feedback for the participant..."></textarea>
+                                        <div class="form-text">Comments will be shared anonymously with participants after results are finalized</div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-success btn-lg" id="submitEvaluation">
+                                            <i class="fas fa-check-circle me-2"></i>Submit Evaluation
+                                        </button>
+                                        <button class="btn btn-outline-secondary">
+                                            <i class="fas fa-save me-2"></i>Save as Draft
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Evaluation Guidelines</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-info">
+                                        <h6><i class="fas fa-info-circle me-2"></i>Important Notes</h6>
+                                        <ul class="small mb-0 ps-3">
+                                            <li>You are evaluating anonymous participants identified only by code letters</li>
+                                            <li>Score based solely on performance, not identity</li>
+                                            <li>Provide constructive feedback in comments</li>
+                                            <li>Submit evaluations before the deadline</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <h6 class="mt-3">Scoring Scale</h6>
+                                    <div class="small">
+                                        <div class="d-flex justify-content-between">
+                                            <span>90-100: Outstanding</span>
+                                            <span class="badge bg-success">A</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>80-89: Excellent</span>
+                                            <span class="badge bg-info">B</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>70-79: Good</span>
+                                            <span class="badge bg-primary">C</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>60-69: Satisfactory</span>
+                                            <span class="badge bg-warning">D</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Below 60: Needs Improvement</span>
+                                            <span class="badge bg-danger">F</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Next Participant</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="code-letter">
+                                        C-09
+                                    </div>
+                                    <p class="small text-muted">Ready for evaluation</p>
+                                    <button class="btn btn-sm btn-outline-primary">Evaluate Next</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Competitions Section -->
+        <div id="competitions" class="dashboard-section">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-trophy me-2"></i>My Assigned Competitions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">Code Marathon</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><i class="fas fa-code me-2"></i><strong>Category:</strong> Technical</p>
+                                    <p><i class="fas fa-users me-2"></i><strong>Participants:</strong> 10</p>
+                                    <p><i class="fas fa-check-circle me-2 text-success"></i><strong>Evaluated:</strong> 8/10</p>
+                                    <p><i class="fas fa-clock me-2 text-warning"></i><strong>Deadline:</strong> Today, 5:00 PM</p>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar bg-success" style="width: 80%">80%</div>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" onclick="showSection('evaluations')">
+                                            <i class="fas fa-clipboard-check me-1"></i>Continue Evaluation
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">Web Design Challenge</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><i class="fas fa-palette me-2"></i><strong>Category:</strong> Technical</p>
+                                    <p><i class="fas fa-users me-2"></i><strong>Participants:</strong> 8</p>
+                                    <p><i class="fas fa-check-circle me-2 text-success"></i><strong>Evaluated:</strong> 5/8</p>
+                                    <p><i class="fas fa-clock me-2 text-warning"></i><strong>Deadline:</strong> Tomorrow, 10:00 AM</p>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar bg-warning" style="width: 63%">63%</div>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-info text-white" onclick="showSection('evaluations')">
+                                            <i class="fas fa-clipboard-check me-1"></i>Continue Evaluation
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">Dance Competition</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><i class="fas fa-music me-2"></i><strong>Category:</strong> Cultural</p>
+                                    <p><i class="fas fa-users me-2"></i><strong>Participants:</strong> 6</p>
+                                    <p><i class="fas fa-check-circle me-2 text-success"></i><strong>Evaluated:</strong> 3/6</p>
+                                    <p><i class="fas fa-clock me-2 text-warning"></i><strong>Deadline:</strong> Mar 18, 3:00 PM</p>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar bg-info" style="width: 50%">50%</div>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-success" onclick="showSection('evaluations')">
+                                            <i class="fas fa-clipboard-check me-1"></i>Continue Evaluation
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Evaluations Section -->
+        <div id="completed" class="dashboard-section">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-check-circle me-2"></i>Completed Evaluations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Competition</th>
+                                    <th>Participant Code</th>
+                                    <th>Score</th>
+                                    <th>Grade</th>
+                                    <th>Evaluation Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Code Marathon</td>
+                                    <td><span class="badge bg-primary">C-03</span></td>
+                                    <td>92/100</td>
+                                    <td><span class="badge bg-success">A</span></td>
+                                    <td>Mar 14, 2026</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Dance Competition</td>
+                                    <td><span class="badge bg-primary">D-05</span></td>
+                                    <td>88/100</td>
+                                    <td><span class="badge bg-info">B</span></td>
+                                    <td>Mar 13, 2026</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Web Design Challenge</td>
+                                    <td><span class="badge bg-primary">W-08</span></td>
+                                    <td>76/100</td>
+                                    <td><span class="badge bg-primary">C</span></td>
+                                    <td>Mar 12, 2026</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Code Marathon</td>
+                                    <td><span class="badge bg-primary">C-01</span></td>
+                                    <td>85/100</td>
+                                    <td><span class="badge bg-info">B</span></td>
+                                    <td>Mar 11, 2026</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info">View Details</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Section Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+            
+            // Update page title
+            const pageTitle = document.getElementById('pageTitle');
+            const sectionTitles = {
+                'dashboard': 'Judge Dashboard',
+                'evaluations': 'Participant Evaluation',
+                'competitions': 'My Competitions',
+                'completed': 'Completed Evaluations'
+            };
+            pageTitle.innerHTML = `<i class="fas fa-gavel me-2"></i>${sectionTitles[sectionId]}`;
+        }
+
+        // Initialize navigation and functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up nav link click events
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.getAttribute('data-section');
+                    showSection(section);
+                });
+            });
+
+            // Evaluation criteria sliders functionality
+            const criteriaSliders = [
+                { slider: 'criteria1', value: 'criteria1Value' },
+                { slider: 'criteria2', value: 'criteria2Value' },
+                { slider: 'criteria3', value: 'criteria3Value' },
+                { slider: 'criteria4', value: 'criteria4Value' },
+                { slider: 'criteria5', value: 'criteria5Value' }
+            ];
+            
+            criteriaSliders.forEach(criteria => {
+                const slider = document.getElementById(criteria.slider);
+                const valueDisplay = document.getElementById(criteria.value);
+                
+                slider.addEventListener('input', function() {
+                    valueDisplay.textContent = this.value;
+                    updateOverallScore();
+                });
+            });
+            
+            // Update overall score based on criteria
+            function updateOverallScore() {
+                const criteria1 = parseInt(document.getElementById('criteria1').value);
+                const criteria2 = parseInt(document.getElementById('criteria2').value);
+                const criteria3 = parseInt(document.getElementById('criteria3').value);
+                const criteria4 = parseInt(document.getElementById('criteria4').value);
+                const criteria5 = parseInt(document.getElementById('criteria5').value);
+                
+                const totalScore = criteria1 + criteria2 + criteria3 + criteria4 + criteria5;
+                document.getElementById('overallScore').value = totalScore;
+            }
+            
+            // Submit evaluation button
+            document.getElementById('submitEvaluation').addEventListener('click', function() {
+                const overallScore = document.getElementById('overallScore').value;
+                const comments = document.getElementById('judgeComments').value;
+                
+                if (comments.trim() === '') {
+                    alert('Please provide comments for the participant before submitting.');
+                    return;
+                }
+                
+                // Show loading state
+                this.classList.add('loading');
+                
+                // Simulate submission process
+                setTimeout(() => {
+                    this.classList.remove('loading');
+                    alert(`Evaluation submitted successfully!\n\nParticipant: C-07\nScore: ${overallScore}/100`);
+                    
+                    // Reset form for next participant
+                    document.getElementById('judgeComments').value = '';
+                    
+                    // Show next participant
+                    showSection('dashboard');
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
