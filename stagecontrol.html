@@ -323,6 +323,26 @@
                 margin-left: 70px;
             }
         }
+
+        /* Custom animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse-alert {
+            animation: pulseAlert 2s infinite;
+        }
+        
+        @keyframes pulseAlert {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
     </style>
 </head>
 <body>
@@ -349,7 +369,7 @@
                 <i class="fas fa-calendar-alt me-2"></i><span>Schedule</span>
             </a>
             <div class="mt-auto">
-                <a href="../index.php" class="nav-link text-danger">
+                <a href="#" class="nav-link text-danger" id="logoutBtn">
                     <i class="fas fa-sign-out-alt me-2"></i><span>Logout</span>
                 </a>
             </div>
@@ -366,42 +386,42 @@
                 </h4>
                 <div class="navbar-text">
                     <span class="text-muted">Welcome,</span> 
-                    <strong>Rajesh Kumar</strong>
+                    <strong id="userName">Rajesh Kumar</strong>
                     <span class="badge bg-primary ms-2">Stage 1 Controller</span>
                 </div>
             </div>
         </nav>
         
         <!-- Dashboard Section -->
-        <div id="dashboard" class="dashboard-section active">
+        <div id="dashboard" class="dashboard-section active fade-in">
             <!-- Statistics Cards -->
             <div class="row mb-4">
                 <div class="col-md-3">
                     <div class="card stat-card">
-                        <div class="stat-number">42</div>
+                        <div class="stat-number" id="totalParticipants">0</div>
                         <div class="stat-label">Participants Today</div>
-                        <small class="text-success">+8 checked in</small>
+                        <small class="text-success" id="checkedInText">Loading...</small>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card stat-card">
-                        <div class="stat-number">3</div>
+                        <div class="stat-number" id="activeCompetitions">0</div>
                         <div class="stat-label">Active Competitions</div>
-                        <small class="text-info">1 ongoing</small>
+                        <small class="text-info" id="ongoingText">Loading...</small>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card stat-card">
-                        <div class="stat-number">28</div>
+                        <div class="stat-number" id="codesAssigned">0</div>
                         <div class="stat-label">Codes Assigned</div>
-                        <small class="text-warning">5 pending</small>
+                        <small class="text-warning" id="pendingText">Loading...</small>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card stat-card">
-                        <div class="stat-number">92%</div>
+                        <div class="stat-number" id="checkinRate">0%</div>
                         <div class="stat-label">Check-in Rate</div>
-                        <small class="text-success">Excellent</small>
+                        <small class="text-success" id="rateStatus">Loading...</small>
                     </div>
                 </div>
             </div>
@@ -450,40 +470,8 @@
                             <h5 class="mb-0"><i class="fas fa-desktop me-2"></i>Stage Status</h5>
                             <span class="badge bg-success"><span class="live-indicator"></span>LIVE</span>
                         </div>
-                        <div class="card-body">
-                            <div class="stage-status stage-active">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 class="mb-1">Stage 1 - Main Auditorium</h5>
-                                        <p class="mb-1"><strong>Current:</strong> Code Marathon - Round 2</p>
-                                        <p class="mb-0"><strong>Next:</strong> Battle of Bands (in 45 mins)</p>
-                                    </div>
-                                    <span class="badge bg-success fs-6">ACTIVE</span>
-                                </div>
-                                <div class="progress mt-2">
-                                    <div class="progress-bar bg-success" style="width: 65%">65% Complete</div>
-                                </div>
-                            </div>
-                            
-                            <div class="stage-status stage-upcoming">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Stage 2 - Open Air Theater</h6>
-                                        <p class="mb-0"><strong>Next:</strong> Dance Competition (starts in 30 mins)</p>
-                                    </div>
-                                    <span class="badge bg-warning">UPCOMING</span>
-                                </div>
-                            </div>
-                            
-                            <div class="stage-status stage-completed">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Stage 3 - Seminar Hall</h6>
-                                        <p class="mb-0"><strong>Completed:</strong> Debate Competition</p>
-                                    </div>
-                                    <span class="badge bg-info">COMPLETED</span>
-                                </div>
-                            </div>
+                        <div class="card-body" id="stageStatusContainer">
+                            <!-- Stage status will be loaded here -->
                         </div>
                     </div>
                 </div>
@@ -493,41 +481,10 @@
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><i class="fas fa-users me-2"></i>Live Participant Updates</h5>
-                            <span class="badge bg-danger">5 pending check-in</span>
+                            <span class="badge bg-danger" id="pendingCheckinBadge">0 pending</span>
                         </div>
-                        <div class="card-body">
-                            <div class="list-group list-group-flush">
-                                <div class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-1">Participant <span class="badge bg-primary">C-07</span></h6>
-                                            <small class="text-muted">Code Marathon - Currently presenting</small>
-                                        </div>
-                                        <span class="badge bg-success">On Stage</span>
-                                    </div>
-                                    <div class="progress mt-2">
-                                        <div class="progress-bar bg-success" style="width: 75%">15 min remaining</div>
-                                    </div>
-                                </div>
-                                <div class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-1">Participant <span class="badge bg-primary">C-09</span></h6>
-                                            <small class="text-muted">Code Marathon - Next in queue</small>
-                                        </div>
-                                        <span class="badge bg-warning">Ready Backstage</span>
-                                    </div>
-                                </div>
-                                <div class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-1">Participant <span class="badge bg-primary">D-03</span></h6>
-                                            <small class="text-muted">Dance Competition - Checked in</small>
-                                        </div>
-                                        <span class="badge bg-info">Awaiting Schedule</span>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="card-body" id="liveUpdatesContainer">
+                            <!-- Live updates will be loaded here -->
                         </div>
                     </div>
                 </div>
@@ -542,7 +499,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table class="table table-hover" id="scheduleTable">
                                     <thead>
                                         <tr>
                                             <th>Time</th>
@@ -552,49 +509,8 @@
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <strong>9:00 - 12:00</strong>
-                                            </td>
-                                            <td>
-                                                <strong>Code Marathon - Round 2</strong>
-                                                <br><small class="text-muted">Technical Competition</small>
-                                            </td>
-                                            <td>10 participants</td>
-                                            <td><span class="badge bg-success">Live</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary">Manage</button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <strong>13:00 - 16:00</strong>
-                                            </td>
-                                            <td>
-                                                <strong>Battle of Bands</strong>
-                                                <br><small class="text-muted">Cultural Competition</small>
-                                            </td>
-                                            <td>8 bands</td>
-                                            <td><span class="badge bg-warning">Upcoming</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-secondary">Prepare</button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <strong>17:00 - 19:00</strong>
-                                            </td>
-                                            <td>
-                                                <strong>Dance Competition - Finals</strong>
-                                                <br><small class="text-muted">Cultural Competition</small>
-                                            </td>
-                                            <td>6 participants</td>
-                                            <td><span class="badge bg-info">Scheduled</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-secondary">Prepare</button>
-                                            </td>
-                                        </tr>
+                                    <tbody id="scheduleTableBody">
+                                        <!-- Schedule data will be loaded here -->
                                     </tbody>
                                 </table>
                             </div>
@@ -605,13 +521,13 @@
         </div>
 
         <!-- Stage Management Section -->
-        <div id="stage-management" class="dashboard-section">
+        <div id="stage-management" class="dashboard-section fade-in">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5><i class="fas fa-desktop me-2"></i>Stage Management - Stage 1</h5>
                     <div>
                         <span class="badge bg-success me-2"><span class="live-indicator"></span>LIVE</span>
-                        <span class="badge bg-primary">Code Marathon</span>
+                        <span class="badge bg-primary" id="currentCompetitionBadge">Loading...</span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -619,49 +535,49 @@
                         <div class="col-md-8">
                             <div class="card">
                                 <div class="card-header bg-primary text-white">
-                                    <h5 class="mb-0">Current Competition: Code Marathon - Round 2</h5>
+                                    <h5 class="mb-0" id="currentCompetitionTitle">Current Competition: Loading...</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row mb-4">
                                         <div class="col-md-6">
                                             <div class="d-flex justify-content-between">
                                                 <span><strong>Start Time:</strong></span>
-                                                <span>9:00 AM</span>
+                                                <span id="startTime">Loading...</span>
                                             </div>
                                             <div class="d-flex justify-content-between">
                                                 <span><strong>End Time:</strong></span>
-                                                <span>12:00 PM</span>
+                                                <span id="endTime">Loading...</span>
                                             </div>
                                             <div class="d-flex justify-content-between">
                                                 <span><strong>Duration:</strong></span>
-                                                <span>3 hours</span>
+                                                <span id="duration">Loading...</span>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="d-flex justify-content-between">
                                                 <span><strong>Participants:</strong></span>
-                                                <span>10/10</span>
+                                                <span id="participantsCount">Loading...</span>
                                             </div>
                                             <div class="d-flex justify-content-between">
                                                 <span><strong>Completed:</strong></span>
-                                                <span>6/10</span>
+                                                <span id="completedCount">Loading...</span>
                                             </div>
                                             <div class="d-flex justify-content-between">
                                                 <span><strong>Current:</strong></span>
-                                                <span>Participant C-07</span>
+                                                <span id="currentParticipant">Loading...</span>
                                             </div>
                                         </div>
                                     </div>
                                     
                                     <div class="progress mb-4" style="height: 20px;">
-                                        <div class="progress-bar bg-success" style="width: 65%">
-                                            <strong>65% Complete</strong>
+                                        <div class="progress-bar bg-success" id="competitionProgress" style="width: 0%">
+                                            <strong>0% Complete</strong>
                                         </div>
                                     </div>
                                     
                                     <h5 class="mb-3">Participant Queue</h5>
                                     <div class="table-responsive">
-                                        <table class="table table-striped">
+                                        <table class="table table-striped" id="participantQueueTable">
                                             <thead>
                                                 <tr>
                                                     <th>Queue</th>
@@ -671,43 +587,8 @@
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
-                                                <tr class="table-success">
-                                                    <td>Current</td>
-                                                    <td><span class="badge bg-primary fs-6">C-07</span></td>
-                                                    <td><span class="badge bg-success">On Stage</span></td>
-                                                    <td>10:30 - 10:45</td>
-                                                    <td>
-                                                        <button class="btn btn-sm btn-warning">Mark Complete</button>
-                                                    </td>
-                                                </tr>
-                                                <tr class="table-warning">
-                                                    <td>Next</td>
-                                                    <td><span class="badge bg-primary fs-6">C-09</span></td>
-                                                    <td><span class="badge bg-warning">Ready Backstage</span></td>
-                                                    <td>10:45 - 11:00</td>
-                                                    <td>
-                                                        <button class="btn btn-sm btn-success">Call to Stage</button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>3</td>
-                                                    <td><span class="badge bg-primary fs-6">C-04</span></td>
-                                                    <td><span class="badge bg-info">Checked In</span></td>
-                                                    <td>11:00 - 11:15</td>
-                                                    <td>
-                                                        <button class="btn btn-sm btn-outline-primary">Prepare</button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>4</td>
-                                                    <td><span class="badge bg-primary fs-6">C-01</span></td>
-                                                    <td><span class="badge bg-info">Checked In</span></td>
-                                                    <td>11:15 - 11:30</td>
-                                                    <td>
-                                                        <button class="btn btn-sm btn-outline-primary">Prepare</button>
-                                                    </td>
-                                                </tr>
+                                            <tbody id="queueTableBody">
+                                                <!-- Queue data will be loaded here -->
                                             </tbody>
                                         </table>
                                     </div>
@@ -721,21 +602,21 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="d-grid gap-2 mb-3">
-                                        <button class="btn btn-success">
+                                        <button class="btn btn-success" id="startCompetitionBtn">
                                             <i class="fas fa-play me-2"></i>Start Competition
                                         </button>
-                                        <button class="btn btn-warning">
+                                        <button class="btn btn-warning" id="pauseCompetitionBtn">
                                             <i class="fas fa-pause me-2"></i>Pause Competition
                                         </button>
-                                        <button class="btn btn-danger">
+                                        <button class="btn btn-danger" id="endCompetitionBtn">
                                             <i class="fas fa-stop me-2"></i>End Competition
                                         </button>
                                     </div>
                                     
                                     <div class="mb-3">
                                         <label class="form-label">Stage Announcement</label>
-                                        <textarea class="form-control" rows="3" placeholder="Make an announcement to participants..."></textarea>
-                                        <button class="btn btn-info mt-2 w-100">
+                                        <textarea class="form-control" id="announcementText" rows="3" placeholder="Make an announcement to participants..."></textarea>
+                                        <button class="btn btn-info mt-2 w-100" id="makeAnnouncementBtn">
                                             <i class="fas fa-bullhorn me-2"></i>Make Announcement
                                         </button>
                                     </div>
@@ -743,9 +624,9 @@
                                     <div class="alert alert-info">
                                         <h6><i class="fas fa-info-circle me-2"></i>Quick Actions</h6>
                                         <div class="d-grid gap-2">
-                                            <button class="btn btn-sm btn-outline-primary">Call Next Participant</button>
-                                            <button class="btn btn-sm btn-outline-warning">Add Time Extension</button>
-                                            <button class="btn btn-sm btn-outline-info">Technical Break</button>
+                                            <button class="btn btn-sm btn-outline-primary" id="callNextBtn">Call Next Participant</button>
+                                            <button class="btn btn-sm btn-outline-warning" id="addTimeBtn">Add Time Extension</button>
+                                            <button class="btn btn-sm btn-outline-info" id="technicalBreakBtn">Technical Break</button>
                                         </div>
                                     </div>
                                 </div>
@@ -755,12 +636,8 @@
                                 <div class="card-header">
                                     <h6 class="mb-0">Next Competition</h6>
                                 </div>
-                                <div class="card-body">
-                                    <h6>Battle of Bands</h6>
-                                    <p class="small mb-2"><strong>Starts:</strong> 1:00 PM</p>
-                                    <p class="small mb-2"><strong>Participants:</strong> 8 bands</p>
-                                    <p class="small mb-0"><strong>Duration:</strong> 3 hours</p>
-                                    <button class="btn btn-sm btn-outline-primary mt-2 w-100">Prepare Stage</button>
+                                <div class="card-body" id="nextCompetitionContainer">
+                                    <!-- Next competition info will be loaded here -->
                                 </div>
                             </div>
                         </div>
@@ -770,13 +647,13 @@
         </div>
 
         <!-- Participant Check-in Section -->
-        <div id="checkin" class="dashboard-section">
+        <div id="checkin" class="dashboard-section fade-in">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5><i class="fas fa-user-check me-2"></i>Participant Check-in</h5>
                     <div>
                         <span class="badge bg-primary me-2">Stage 1</span>
-                        <span class="badge bg-success">Code Marathon</span>
+                        <span class="badge bg-success" id="checkinCompetitionBadge">Loading...</span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -790,17 +667,15 @@
                                     <form id="quickCheckinForm">
                                         <div class="mb-3">
                                             <label class="form-label">Participant ID or Registration Number</label>
-                                            <input type="text" class="form-control" placeholder="Enter ID or scan barcode" id="participantId">
+                                            <input type="text" class="form-control" placeholder="Enter ID or scan barcode" id="participantId" required>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Competition</label>
-                                            <select class="form-select" id="checkinCompetition">
-                                                <option value="code_marathon">Code Marathon</option>
-                                                <option value="battle_bands">Battle of Bands</option>
-                                                <option value="dance">Dance Competition</option>
+                                            <select class="form-select" id="checkinCompetition" required>
+                                                <option value="">Select Competition</option>
                                             </select>
                                         </div>
-                                        <button type="submit" class="btn btn-success w-100">
+                                        <button type="submit" class="btn btn-success w-100" id="checkinSubmitBtn">
                                             <i class="fas fa-check-circle me-2"></i>Check-in Participant
                                         </button>
                                     </form>
@@ -815,70 +690,38 @@
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between mb-2">
                                         <span>Total Participants:</span>
-                                        <span class="fw-bold">42</span>
+                                        <span class="fw-bold" id="statsTotal">0</span>
                                     </div>
                                     <div class="d-flex justify-content-between mb-2">
                                         <span>Checked In:</span>
-                                        <span class="fw-bold text-success">38</span>
+                                        <span class="fw-bold text-success" id="statsCheckedIn">0</span>
                                     </div>
                                     <div class="d-flex justify-content-between mb-2">
                                         <span>Pending Check-in:</span>
-                                        <span class="fw-bold text-warning">4</span>
+                                        <span class="fw-bold text-warning" id="statsPending">0</span>
                                     </div>
                                     <div class="d-flex justify-content-between mb-2">
                                         <span>Check-in Rate:</span>
-                                        <span class="fw-bold text-info">90.5%</span>
+                                        <span class="fw-bold text-info" id="statsRate">0%</span>
                                     </div>
                                     <div class="progress mt-3">
-                                        <div class="progress-bar bg-success" style="width: 90%"></div>
+                                        <div class="progress-bar bg-success" id="checkinProgressBar" style="width: 0%"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <h5 class="mb-3">Participants - Code Marathon</h5>
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <div class="participant-card checked-in">
-                                <div class="code-letter">C-07</div>
-                                <p class="mb-1"><strong>Status:</strong> <span class="badge bg-success">Checked In</span></p>
-                                <p class="mb-1"><strong>Time:</strong> 9:15 AM</p>
-                                <p class="mb-0"><strong>Queue:</strong> Current</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="participant-card checked-in">
-                                <div class="code-letter">C-09</div>
-                                <p class="mb-1"><strong>Status:</strong> <span class="badge bg-success">Checked In</span></p>
-                                <p class="mb-1"><strong>Time:</strong> 9:20 AM</p>
-                                <p class="mb-0"><strong>Queue:</strong> Next</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="participant-card checked-in">
-                                <div class="code-letter">C-04</div>
-                                <p class="mb-1"><strong>Status:</strong> <span class="badge bg-success">Checked In</span></p>
-                                <p class="mb-1"><strong>Time:</strong> 9:25 AM</p>
-                                <p class="mb-0"><strong>Queue:</strong> 3</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="participant-card pending">
-                                <div class="code-letter">C-02</div>
-                                <p class="mb-1"><strong>Status:</strong> <span class="badge bg-warning">Pending</span></p>
-                                <p class="mb-1"><strong>Time:</strong> -</p>
-                                <p class="mb-0"><strong>Queue:</strong> -</p>
-                                <button class="btn btn-sm btn-success mt-2 w-100">Check In</button>
-                            </div>
-                        </div>
+                    <h5 class="mb-3" id="participantsListTitle">Participants</h5>
+                    <div class="row" id="participantsContainer">
+                        <!-- Participants will be loaded here -->
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Code Assignment Section -->
-        <div id="code-assignment" class="dashboard-section">
+        <div id="code-assignment" class="dashboard-section fade-in">
             <div class="card">
                 <div class="card-header">
                     <h5><i class="fas fa-id-card me-2"></i>Code Assignment</h5>
@@ -897,37 +740,26 @@
                                                 <label class="form-label">Competition</label>
                                                 <select class="form-select" id="competitionSelect" required>
                                                     <option value="">Select Competition</option>
-                                                    <option value="code_marathon">Code Marathon</option>
-                                                    <option value="battle_bands">Battle of Bands</option>
-                                                    <option value="dance">Dance Competition</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">Participant</label>
                                                 <select class="form-select" id="participantSelect" required>
                                                     <option value="">Select Participant</option>
-                                                    <option value="p1">Rajesh Kumar (ABC2026001)</option>
-                                                    <option value="p2">Priya Sharma (ABC2026002)</option>
-                                                    <option value="p3">Amit Patel (ABC2026003)</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">Code Letter</label>
                                                 <select class="form-select" id="codeLetterSelect" required>
                                                     <option value="">Select Code</option>
-                                                    <option value="C-01">C-01</option>
-                                                    <option value="C-02">C-02</option>
-                                                    <option value="C-03">C-03</option>
-                                                    <option value="C-04">C-04</option>
-                                                    <option value="C-05">C-05</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">Status</label>
-                                                <input type="text" class="form-control" value="Available" readonly>
+                                                <input type="text" class="form-control" id="codeStatus" value="Available" readonly>
                                             </div>
                                         </div>
-                                        <button type="submit" class="btn btn-success">
+                                        <button type="submit" class="btn btn-success" id="assignCodeBtn">
                                             <i class="fas fa-id-card me-2"></i>Assign Code to Participant
                                         </button>
                                     </form>
@@ -939,45 +771,16 @@
                                 <div class="card-header">
                                     <h6 class="mb-0">Code Assignment Status</h6>
                                 </div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <h6>Code Marathon</h6>
-                                        <div class="d-flex justify-content-between">
-                                            <span>Assigned:</span>
-                                            <span class="fw-bold">8/10</span>
-                                        </div>
-                                        <div class="progress mb-3">
-                                            <div class="progress-bar bg-success" style="width: 80%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <h6>Battle of Bands</h6>
-                                        <div class="d-flex justify-content-between">
-                                            <span>Assigned:</span>
-                                            <span class="fw-bold">5/8</span>
-                                        </div>
-                                        <div class="progress mb-3">
-                                            <div class="progress-bar bg-warning" style="width: 63%"></div>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <h6>Dance Competition</h6>
-                                        <div class="d-flex justify-content-between">
-                                            <span>Assigned:</span>
-                                            <span class="fw-bold">3/6</span>
-                                        </div>
-                                        <div class="progress mb-3">
-                                            <div class="progress-bar bg-info" style="width: 50%"></div>
-                                        </div>
-                                    </div>
+                                <div class="card-body" id="codeStatusContainer">
+                                    <!-- Code status will be loaded here -->
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <h5 class="mb-3">Assigned Codes - Code Marathon</h5>
+                    <h5 class="mb-3" id="assignedCodesTitle">Assigned Codes</h5>
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped" id="assignedCodesTable">
                             <thead>
                                 <tr>
                                     <th>Code</th>
@@ -988,37 +791,8 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td><span class="badge bg-primary fs-6">C-07</span></td>
-                                    <td>Rajesh Kumar</td>
-                                    <td>ABC College</td>
-                                    <td>Mar 15, 8:30 AM</td>
-                                    <td><span class="badge bg-success">Active</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-warning">Reassign</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><span class="badge bg-primary fs-6">C-09</span></td>
-                                    <td>Priya Sharma</td>
-                                    <td>ABC College</td>
-                                    <td>Mar 15, 8:35 AM</td>
-                                    <td><span class="badge bg-success">Active</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-warning">Reassign</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><span class="badge bg-primary fs-6">C-04</span></td>
-                                    <td>Amit Patel</td>
-                                    <td>ABC College</td>
-                                    <td>Mar 15, 8:40 AM</td>
-                                    <td><span class="badge bg-success">Active</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-warning">Reassign</button>
-                                    </td>
-                                </tr>
+                            <tbody id="assignedCodesBody">
+                                <!-- Assigned codes will be loaded here -->
                             </tbody>
                         </table>
                     </div>
@@ -1027,7 +801,7 @@
         </div>
 
         <!-- Schedule Section -->
-        <div id="schedule" class="dashboard-section">
+        <div id="schedule" class="dashboard-section fade-in">
             <div class="card">
                 <div class="card-header">
                     <h5><i class="fas fa-calendar-alt me-2"></i>Competition Schedule</h5>
@@ -1049,7 +823,7 @@
                             <div class="tab-content mt-3">
                                 <div class="tab-pane fade show active" id="today">
                                     <div class="table-responsive">
-                                        <table class="table table-hover">
+                                        <table class="table table-hover" id="todayScheduleTable">
                                             <thead>
                                                 <tr>
                                                     <th>Time</th>
@@ -1060,40 +834,49 @@
                                                     <th>Controller</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>9:00 - 12:00</td>
-                                                    <td>Stage 1</td>
-                                                    <td>Code Marathon - Round 2</td>
-                                                    <td>10</td>
-                                                    <td><span class="badge bg-success">Live</span></td>
-                                                    <td>Rajesh Kumar</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>13:00 - 16:00</td>
-                                                    <td>Stage 1</td>
-                                                    <td>Battle of Bands</td>
-                                                    <td>8</td>
-                                                    <td><span class="badge bg-warning">Upcoming</span></td>
-                                                    <td>Rajesh Kumar</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>10:00 - 13:00</td>
-                                                    <td>Stage 2</td>
-                                                    <td>Dance Competition - Prelims</td>
-                                                    <td>12</td>
-                                                    <td><span class="badge bg-success">Live</span></td>
-                                                    <td>Priya Sharma</td>
-                                                </tr>
+                                            <tbody id="todayScheduleBody">
+                                                <!-- Today's schedule will be loaded here -->
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="tomorrow">
-                                    <!-- Tomorrow's schedule content -->
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="tomorrowScheduleTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Time</th>
+                                                    <th>Stage</th>
+                                                    <th>Competition</th>
+                                                    <th>Participants</th>
+                                                    <th>Status</th>
+                                                    <th>Controller</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tomorrowScheduleBody">
+                                                <!-- Tomorrow's schedule will be loaded here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                                 <div class="tab-pane fade" id="week">
-                                    <!-- Week schedule content -->
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="weekScheduleTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Stage</th>
+                                                    <th>Competition</th>
+                                                    <th>Participants</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="weekScheduleBody">
+                                                <!-- Week schedule will be loaded here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1102,30 +885,8 @@
                                 <div class="card-header">
                                     <h6 class="mb-0">My Schedule - Stage 1</h6>
                                 </div>
-                                <div class="card-body">
-                                    <div class="list-group">
-                                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-1">Code Marathon</h6>
-                                                <small>9:00 AM - 12:00 PM</small>
-                                            </div>
-                                            <span class="badge bg-success">Live</span>
-                                        </div>
-                                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-1">Battle of Bands</h6>
-                                                <small>1:00 PM - 4:00 PM</small>
-                                            </div>
-                                            <span class="badge bg-warning">Next</span>
-                                        </div>
-                                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-1">Dance Competition</h6>
-                                                <small>5:00 PM - 7:00 PM</small>
-                                            </div>
-                                            <span class="badge bg-info">Scheduled</span>
-                                        </div>
-                                    </div>
+                                <div class="card-body" id="myScheduleContainer">
+                                    <!-- My schedule will be loaded here -->
                                 </div>
                             </div>
                             
@@ -1134,8 +895,10 @@
                                     <h6 class="mb-0">Quick Notes</h6>
                                 </div>
                                 <div class="card-body">
-                                    <textarea class="form-control" rows="5" placeholder="Add notes for today's events..."></textarea>
-                                    <button class="btn btn-sm btn-primary mt-2 w-100">Save Notes</button>
+                                    <textarea class="form-control" id="quickNotes" rows="5" placeholder="Add notes for today's events..."></textarea>
+                                    <button class="btn btn-sm btn-primary mt-2 w-100" id="saveNotesBtn">
+                                        <i class="fas fa-save me-2"></i>Save Notes
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1145,86 +908,972 @@
         </div>
     </div>
 
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                    <h5 id="successMessage">Operation Successful!</h5>
+                    <button type="button" class="btn btn-success mt-3" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <i class="fas fa-exclamation-circle text-danger fa-3x mb-3"></i>
+                    <h5 id="errorMessage">Operation Failed!</h5>
+                    <p class="text-muted" id="errorDetails"></p>
+                    <button type="button" class="btn btn-danger mt-3" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Section Navigation
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.dashboard-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show selected section
-            document.getElementById(sectionId).classList.add('active');
-            
-            // Update active nav link
-            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
-            
-            // Update page title
-            const pageTitle = document.getElementById('pageTitle');
-            const sectionTitles = {
-                'dashboard': 'Stage Controller Dashboard',
-                'stage-management': 'Stage Management',
-                'checkin': 'Participant Check-in',
-                'code-assignment': 'Code Assignment',
-                'schedule': 'Competition Schedule'
-            };
-            pageTitle.innerHTML = `<i class="fas fa-users-cog me-2"></i>${sectionTitles[sectionId]}`;
-        }
+        // Stage Controller Application
+        class StageControllerApp {
+            constructor() {
+                this.currentUser = {
+                    name: "Rajesh Kumar",
+                    role: "Stage 1 Controller",
+                    stage: "Stage 1"
+                };
+                
+                this.competitions = [];
+                this.participants = [];
+                this.assignedCodes = [];
+                this.schedule = [];
+                
+                this.init();
+            }
 
-        // Initialize navigation and functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set up nav link click events
-            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const section = this.getAttribute('data-section');
-                    showSection(section);
+            init() {
+                this.setupEventListeners();
+                this.loadInitialData();
+                this.startRealTimeUpdates();
+                this.showSection('dashboard');
+            }
+
+            setupEventListeners() {
+                // Navigation
+                document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const section = e.target.getAttribute('data-section') || 
+                                      e.target.parentElement.getAttribute('data-section');
+                        this.showSection(section);
+                    });
                 });
-            });
 
-            // Quick check-in form
-            document.getElementById('quickCheckinForm').addEventListener('submit', function(e) {
+                // Forms
+                document.getElementById('quickCheckinForm').addEventListener('submit', (e) => this.handleCheckin(e));
+                document.getElementById('codeAssignmentForm').addEventListener('submit', (e) => this.handleCodeAssignment(e));
+                
+                // Stage Controls
+                document.getElementById('startCompetitionBtn').addEventListener('click', () => this.startCompetition());
+                document.getElementById('pauseCompetitionBtn').addEventListener('click', () => this.pauseCompetition());
+                document.getElementById('endCompetitionBtn').addEventListener('click', () => this.endCompetition());
+                document.getElementById('makeAnnouncementBtn').addEventListener('click', () => this.makeAnnouncement());
+                document.getElementById('callNextBtn').addEventListener('click', () => this.callNextParticipant());
+                document.getElementById('addTimeBtn').addEventListener('click', () => this.addTimeExtension());
+                document.getElementById('technicalBreakBtn').addEventListener('click', () => this.technicalBreak());
+                
+                // Notes
+                document.getElementById('saveNotesBtn').addEventListener('click', () => this.saveNotes());
+                
+                // Logout
+                document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.logout();
+                });
+            }
+
+            showSection(sectionId) {
+                // Hide all sections
+                document.querySelectorAll('.dashboard-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show selected section
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Update active nav link
+                document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+                
+                // Update page title
+                const sectionTitles = {
+                    'dashboard': 'Stage Controller Dashboard',
+                    'stage-management': 'Stage Management',
+                    'checkin': 'Participant Check-in',
+                    'code-assignment': 'Code Assignment',
+                    'schedule': 'Competition Schedule'
+                };
+                document.getElementById('pageTitle').innerHTML = 
+                    `<i class="fas fa-users-cog me-2"></i>${sectionTitles[sectionId]}`;
+                
+                // Load section-specific data
+                this.loadSectionData(sectionId);
+            }
+
+            loadInitialData() {
+                // Simulate API calls to load initial data
+                this.loadCompetitions();
+                this.loadParticipants();
+                this.loadSchedule();
+                this.updateDashboardStats();
+                
+                // Set user info
+                document.getElementById('userName').textContent = this.currentUser.name;
+            }
+
+            loadSectionData(sectionId) {
+                switch(sectionId) {
+                    case 'dashboard':
+                        this.updateDashboard();
+                        break;
+                    case 'stage-management':
+                        this.loadStageManagement();
+                        break;
+                    case 'checkin':
+                        this.loadCheckinSection();
+                        break;
+                    case 'code-assignment':
+                        this.loadCodeAssignmentSection();
+                        break;
+                    case 'schedule':
+                        this.loadScheduleSection();
+                        break;
+                }
+            }
+
+            // Data loading methods
+            loadCompetitions() {
+                // Simulated data - in real app, this would come from API
+                this.competitions = [
+                    {
+                        id: 1,
+                        name: "Code Marathon - Round 2",
+                        category: "technical",
+                        status: "live",
+                        startTime: "9:00 AM",
+                        endTime: "12:00 PM",
+                        duration: "3 hours",
+                        participants: 10,
+                        completed: 6,
+                        currentParticipant: "C-07",
+                        progress: 65
+                    },
+                    {
+                        id: 2,
+                        name: "Battle of Bands",
+                        category: "cultural",
+                        status: "upcoming",
+                        startTime: "1:00 PM",
+                        endTime: "4:00 PM",
+                        duration: "3 hours",
+                        participants: 8,
+                        completed: 0,
+                        currentParticipant: null,
+                        progress: 0
+                    },
+                    {
+                        id: 3,
+                        name: "Dance Competition - Finals",
+                        category: "cultural",
+                        status: "scheduled",
+                        startTime: "5:00 PM",
+                        endTime: "7:00 PM",
+                        duration: "2 hours",
+                        participants: 6,
+                        completed: 0,
+                        currentParticipant: null,
+                        progress: 0
+                    }
+                ];
+            }
+
+            loadParticipants() {
+                // Simulated data
+                this.participants = [
+                    { id: "STU001", name: "Rajesh Kumar", college: "ABC College", competition: "Code Marathon", checkedIn: true, code: "C-07", status: "on_stage", checkinTime: "9:15 AM", queue: "Current" },
+                    { id: "STU002", name: "Priya Sharma", college: "ABC College", competition: "Code Marathon", checkedIn: true, code: "C-09", status: "ready", checkinTime: "9:20 AM", queue: "Next" },
+                    { id: "STU003", name: "Amit Patel", college: "ABC College", competition: "Code Marathon", checkedIn: true, code: "C-04", status: "checked_in", checkinTime: "9:25 AM", queue: "3" },
+                    { id: "STU004", name: "Sneha Reddy", college: "XYZ University", competition: "Code Marathon", checkedIn: false, code: null, status: "pending", checkinTime: null, queue: null },
+                    { id: "STU005", name: "Rahul Verma", college: "LMN Institute", competition: "Dance Competition", checkedIn: true, code: "D-03", status: "checked_in", checkinTime: "10:30 AM", queue: null }
+                ];
+            }
+
+            loadSchedule() {
+                // Simulated schedule data
+                this.schedule = {
+                    today: [
+                        { time: "9:00 - 12:00", stage: "Stage 1", competition: "Code Marathon - Round 2", participants: 10, status: "live", controller: "Rajesh Kumar" },
+                        { time: "13:00 - 16:00", stage: "Stage 1", competition: "Battle of Bands", participants: 8, status: "upcoming", controller: "Rajesh Kumar" },
+                        { time: "10:00 - 13:00", stage: "Stage 2", competition: "Dance Competition - Prelims", participants: 12, status: "live", controller: "Priya Sharma" }
+                    ],
+                    tomorrow: [
+                        { time: "9:00 - 12:00", stage: "Stage 1", competition: "Web Design Challenge", participants: 15, status: "scheduled", controller: "Rajesh Kumar" },
+                        { time: "14:00 - 17:00", stage: "Stage 1", competition: "Debate Competition", participants: 8, status: "scheduled", controller: "Rajesh Kumar" }
+                    ],
+                    week: [
+                        { date: "Mar 16", time: "9:00-12:00", stage: "Stage 1", competition: "Code Marathon Finals", participants: 6, status: "scheduled" },
+                        { date: "Mar 16", time: "14:00-17:00", stage: "Stage 1", competition: "Music Competition", participants: 10, status: "scheduled" },
+                        { date: "Mar 17", time: "10:00-13:00", stage: "Stage 1", competition: "Drama Competition", participants: 4, status: "scheduled" }
+                    ]
+                };
+            }
+
+            // Dashboard methods
+            updateDashboardStats() {
+                const totalParticipants = this.participants.length;
+                const checkedIn = this.participants.filter(p => p.checkedIn).length;
+                const activeCompetitions = this.competitions.filter(c => c.status === 'live').length;
+                const assignedCodes = this.participants.filter(p => p.code).length;
+                const checkinRate = totalParticipants > 0 ? Math.round((checkedIn / totalParticipants) * 100) : 0;
+
+                document.getElementById('totalParticipants').textContent = totalParticipants;
+                document.getElementById('checkedInText').textContent = `+${checkedIn} checked in`;
+                document.getElementById('activeCompetitions').textContent = activeCompetitions;
+                document.getElementById('ongoingText').textContent = `${activeCompetitions} ongoing`;
+                document.getElementById('codesAssigned').textContent = assignedCodes;
+                document.getElementById('pendingText').textContent = `${totalParticipants - assignedCodes} pending`;
+                document.getElementById('checkinRate').textContent = `${checkinRate}%`;
+                document.getElementById('rateStatus').textContent = checkinRate >= 90 ? 'Excellent' : 'Good';
+                
+                document.getElementById('pendingCheckinBadge').textContent = `${totalParticipants - checkedIn} pending`;
+            }
+
+            updateDashboard() {
+                this.updateStageStatus();
+                this.updateLiveUpdates();
+                this.updateScheduleTable();
+            }
+
+            updateStageStatus() {
+                const container = document.getElementById('stageStatusContainer');
+                let html = '';
+
+                this.competitions.forEach(comp => {
+                    let statusClass = '';
+                    let statusBadge = '';
+                    
+                    if (comp.status === 'live') {
+                        statusClass = 'stage-active';
+                        statusBadge = '<span class="badge bg-success fs-6">ACTIVE</span>';
+                    } else if (comp.status === 'upcoming') {
+                        statusClass = 'stage-upcoming';
+                        statusBadge = '<span class="badge bg-warning">UPCOMING</span>';
+                    } else {
+                        statusClass = 'stage-completed';
+                        statusBadge = '<span class="badge bg-info">COMPLETED</span>';
+                    }
+
+                    html += `
+                        <div class="stage-status ${statusClass}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1">${this.currentUser.stage} - Main Auditorium</h5>
+                                    <p class="mb-1"><strong>Current:</strong> ${comp.name}</p>
+                                    <p class="mb-0"><strong>Next:</strong> ${this.getNextCompetition(comp.id)}</p>
+                                </div>
+                                ${statusBadge}
+                            </div>
+                            ${comp.status === 'live' ? `
+                            <div class="progress mt-2">
+                                <div class="progress-bar bg-success" style="width: ${comp.progress}%">${comp.progress}% Complete</div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            }
+
+            updateLiveUpdates() {
+                const container = document.getElementById('liveUpdatesContainer');
+                const activeParticipants = this.participants.filter(p => 
+                    p.status === 'on_stage' || p.status === 'ready' || p.status === 'checked_in'
+                );
+
+                let html = '';
+                activeParticipants.forEach(participant => {
+                    let statusBadge = '';
+                    let progressBar = '';
+                    
+                    if (participant.status === 'on_stage') {
+                        statusBadge = '<span class="badge bg-success">On Stage</span>';
+                        progressBar = `
+                            <div class="progress mt-2">
+                                <div class="progress-bar bg-success" style="width: 75%">15 min remaining</div>
+                            </div>
+                        `;
+                    } else if (participant.status === 'ready') {
+                        statusBadge = '<span class="badge bg-warning">Ready Backstage</span>';
+                    } else {
+                        statusBadge = '<span class="badge bg-info">Awaiting Schedule</span>';
+                    }
+
+                    html += `
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">Participant <span class="badge bg-primary">${participant.code}</span></h6>
+                                    <small class="text-muted">${participant.competition} - ${participant.status === 'on_stage' ? 'Currently presenting' : 'Next in queue'}</small>
+                                </div>
+                                ${statusBadge}
+                            </div>
+                            ${progressBar}
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html || '<p class="text-muted text-center">No active participants</p>';
+            }
+
+            updateScheduleTable() {
+                const tbody = document.getElementById('scheduleTableBody');
+                let html = '';
+
+                this.competitions.forEach(comp => {
+                    let statusBadge = '';
+                    if (comp.status === 'live') {
+                        statusBadge = '<span class="badge bg-success">Live</span>';
+                    } else if (comp.status === 'upcoming') {
+                        statusBadge = '<span class="badge bg-warning">Upcoming</span>';
+                    } else {
+                        statusBadge = '<span class="badge bg-info">Scheduled</span>';
+                    }
+
+                    html += `
+                        <tr>
+                            <td><strong>${comp.startTime} - ${comp.endTime}</strong></td>
+                            <td>
+                                <strong>${comp.name}</strong>
+                                <br><small class="text-muted">${this.getCategoryName(comp.category)} Competition</small>
+                            </td>
+                            <td>${comp.participants} participants</td>
+                            <td>${statusBadge}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="app.showSection('stage-management')">Manage</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = html;
+            }
+
+            // Stage Management methods
+            loadStageManagement() {
+                const currentComp = this.competitions.find(c => c.status === 'live') || this.competitions[0];
+                
+                if (currentComp) {
+                    document.getElementById('currentCompetitionTitle').textContent = `Current Competition: ${currentComp.name}`;
+                    document.getElementById('currentCompetitionBadge').textContent = currentComp.name;
+                    document.getElementById('startTime').textContent = currentComp.startTime;
+                    document.getElementById('endTime').textContent = currentComp.endTime;
+                    document.getElementById('duration').textContent = currentComp.duration;
+                    document.getElementById('participantsCount').textContent = `${currentComp.participants}/${currentComp.participants}`;
+                    document.getElementById('completedCount').textContent = `${currentComp.completed}/${currentComp.participants}`;
+                    document.getElementById('currentParticipant').textContent = currentComp.currentParticipant || 'None';
+                    
+                    const progressBar = document.getElementById('competitionProgress');
+                    progressBar.style.width = `${currentComp.progress}%`;
+                    progressBar.innerHTML = `<strong>${currentComp.progress}% Complete</strong>`;
+                    
+                    this.updateParticipantQueue();
+                    this.updateNextCompetition();
+                }
+            }
+
+            updateParticipantQueue() {
+                const tbody = document.getElementById('queueTableBody');
+                const compParticipants = this.participants.filter(p => 
+                    p.competition.includes('Code Marathon') && p.checkedIn
+                );
+
+                let html = '';
+                compParticipants.forEach((participant, index) => {
+                    let rowClass = '';
+                    let statusBadge = '';
+                    let actionBtn = '';
+                    
+                    if (participant.status === 'on_stage') {
+                        rowClass = 'table-success';
+                        statusBadge = '<span class="badge bg-success">On Stage</span>';
+                        actionBtn = '<button class="btn btn-sm btn-warning" onclick="app.markComplete(\'' + participant.id + '\')">Mark Complete</button>';
+                    } else if (participant.status === 'ready') {
+                        rowClass = 'table-warning';
+                        statusBadge = '<span class="badge bg-warning">Ready Backstage</span>';
+                        actionBtn = '<button class="btn btn-sm btn-success" onclick="app.callToStage(\'' + participant.id + '\')">Call to Stage</button>';
+                    } else {
+                        statusBadge = '<span class="badge bg-info">Checked In</span>';
+                        actionBtn = '<button class="btn btn-sm btn-outline-primary" onclick="app.prepareParticipant(\'' + participant.id + '\')">Prepare</button>';
+                    }
+
+                    const queueText = participant.queue || (index + 1);
+
+                    html += `
+                        <tr class="${rowClass}">
+                            <td>${queueText}</td>
+                            <td><span class="badge bg-primary fs-6">${participant.code}</span></td>
+                            <td>${statusBadge}</td>
+                            <td>${this.getTimeSlot(queueText)}</td>
+                            <td>${actionBtn}</td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = html;
+            }
+
+            updateNextCompetition() {
+                const container = document.getElementById('nextCompetitionContainer');
+                const nextComp = this.competitions.find(c => c.status === 'upcoming');
+                
+                if (nextComp) {
+                    container.innerHTML = `
+                        <h6>${nextComp.name}</h6>
+                        <p class="small mb-2"><strong>Starts:</strong> ${nextComp.startTime}</p>
+                        <p class="small mb-2"><strong>Participants:</strong> ${nextComp.participants} participants</p>
+                        <p class="small mb-0"><strong>Duration:</strong> ${nextComp.duration}</p>
+                        <button class="btn btn-sm btn-outline-primary mt-2 w-100" onclick="app.prepareStage()">Prepare Stage</button>
+                    `;
+                } else {
+                    container.innerHTML = '<p class="text-muted text-center">No upcoming competitions</p>';
+                }
+            }
+
+            // Check-in methods
+            loadCheckinSection() {
+                this.updateCompetitionDropdown('checkinCompetition');
+                this.updateCheckinStatistics();
+                this.updateParticipantsList();
+            }
+
+            updateCheckinStatistics() {
+                const total = this.participants.length;
+                const checkedIn = this.participants.filter(p => p.checkedIn).length;
+                const pending = total - checkedIn;
+                const rate = total > 0 ? Math.round((checkedIn / total) * 100) : 0;
+
+                document.getElementById('statsTotal').textContent = total;
+                document.getElementById('statsCheckedIn').textContent = checkedIn;
+                document.getElementById('statsPending').textContent = pending;
+                document.getElementById('statsRate').textContent = `${rate}%`;
+                
+                const progressBar = document.getElementById('checkinProgressBar');
+                progressBar.style.width = `${rate}%`;
+                
+                document.getElementById('checkinCompetitionBadge').textContent = 'Code Marathon';
+                document.getElementById('participantsListTitle').textContent = 'Participants - Code Marathon';
+            }
+
+            updateParticipantsList() {
+                const container = document.getElementById('participantsContainer');
+                const compParticipants = this.participants.filter(p => p.competition.includes('Code Marathon'));
+                
+                let html = '';
+                compParticipants.forEach(participant => {
+                    const cardClass = participant.checkedIn ? 'checked-in' : 'pending';
+                    const statusBadge = participant.checkedIn ? 
+                        '<span class="badge bg-success">Checked In</span>' : 
+                        '<span class="badge bg-warning">Pending</span>';
+                    
+                    const actionBtn = participant.checkedIn ? '' : 
+                        `<button class="btn btn-sm btn-success mt-2 w-100" onclick="app.quickCheckin('${participant.id}')">Check In</button>`;
+
+                    html += `
+                        <div class="col-md-4 mb-3">
+                            <div class="participant-card ${cardClass}">
+                                <div class="code-letter">${participant.code || 'N/A'}</div>
+                                <p class="mb-1"><strong>Status:</strong> ${statusBadge}</p>
+                                <p class="mb-1"><strong>Time:</strong> ${participant.checkinTime || '-'}</p>
+                                <p class="mb-0"><strong>Queue:</strong> ${participant.queue || '-'}</p>
+                                ${actionBtn}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            }
+
+            // Code Assignment methods
+            loadCodeAssignmentSection() {
+                this.updateCompetitionDropdown('competitionSelect');
+                this.updateParticipantDropdown();
+                this.updateCodeDropdown();
+                this.updateCodeStatus();
+                this.updateAssignedCodesTable();
+            }
+
+            updateCodeStatus() {
+                const container = document.getElementById('codeStatusContainer');
+                const competitions = ['Code Marathon', 'Battle of Bands', 'Dance Competition'];
+                
+                let html = '';
+                competitions.forEach(comp => {
+                    const compParticipants = this.participants.filter(p => p.competition.includes(comp));
+                    const assigned = compParticipants.filter(p => p.code).length;
+                    const total = compParticipants.length;
+                    const percentage = total > 0 ? Math.round((assigned / total) * 100) : 0;
+                    
+                    let progressClass = 'bg-success';
+                    if (percentage < 50) progressClass = 'bg-info';
+                    else if (percentage < 80) progressClass = 'bg-warning';
+
+                    html += `
+                        <div class="mb-3">
+                            <h6>${comp}</h6>
+                            <div class="d-flex justify-content-between">
+                                <span>Assigned:</span>
+                                <span class="fw-bold">${assigned}/${total}</span>
+                            </div>
+                            <div class="progress mb-3">
+                                <div class="progress-bar ${progressClass}" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            }
+
+            updateAssignedCodesTable() {
+                const tbody = document.getElementById('assignedCodesBody');
+                const assignedParticipants = this.participants.filter(p => p.code);
+                
+                let html = '';
+                assignedParticipants.forEach(participant => {
+                    html += `
+                        <tr>
+                            <td><span class="badge bg-primary fs-6">${participant.code}</span></td>
+                            <td>${participant.name}</td>
+                            <td>${participant.college}</td>
+                            <td>${participant.checkinTime || 'Not assigned'}</td>
+                            <td><span class="badge bg-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="app.reassignCode('${participant.id}')">Reassign</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = html;
+                document.getElementById('assignedCodesTitle').textContent = `Assigned Codes - Code Marathon (${assignedParticipants.length})`;
+            }
+
+            // Schedule methods
+            loadScheduleSection() {
+                this.updateTodaySchedule();
+                this.updateTomorrowSchedule();
+                this.updateWeekSchedule();
+                this.updateMySchedule();
+            }
+
+            updateTodaySchedule() {
+                const tbody = document.getElementById('todayScheduleBody');
+                this.renderScheduleTable(tbody, this.schedule.today);
+            }
+
+            updateTomorrowSchedule() {
+                const tbody = document.getElementById('tomorrowScheduleBody');
+                this.renderScheduleTable(tbody, this.schedule.tomorrow);
+            }
+
+            updateWeekSchedule() {
+                const tbody = document.getElementById('weekScheduleBody');
+                let html = '';
+                
+                this.schedule.week.forEach(item => {
+                    html += `
+                        <tr>
+                            <td>${item.date}</td>
+                            <td>${item.time}</td>
+                            <td>${item.stage}</td>
+                            <td>${item.competition}</td>
+                            <td>${item.participants}</td>
+                            <td><span class="badge bg-info">${item.status}</span></td>
+                        </tr>
+                    `;
+                });
+                
+                tbody.innerHTML = html;
+            }
+
+            updateMySchedule() {
+                const container = document.getElementById('myScheduleContainer');
+                const mySchedule = this.schedule.today.filter(item => item.controller === this.currentUser.name);
+                
+                let html = '';
+                mySchedule.forEach(item => {
+                    let statusBadge = '';
+                    if (item.status === 'live') {
+                        statusBadge = '<span class="badge bg-success">Live</span>';
+                    } else if (item.status === 'upcoming') {
+                        statusBadge = '<span class="badge bg-warning">Next</span>';
+                    } else {
+                        statusBadge = '<span class="badge bg-info">Scheduled</span>';
+                    }
+
+                    html += `
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">${item.competition}</h6>
+                                <small>${item.time}</small>
+                            </div>
+                            ${statusBadge}
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html || '<p class="text-muted text-center">No schedule for today</p>';
+            }
+
+            // Form handlers
+            async handleCheckin(e) {
                 e.preventDefault();
                 const participantId = document.getElementById('participantId').value;
                 const competition = document.getElementById('checkinCompetition').value;
-                
+
                 if (!participantId) {
-                    alert('Please enter a participant ID');
+                    this.showError('Please enter a participant ID');
                     return;
                 }
-                
-                // Simulate check-in process
-                alert(`Participant ${participantId} checked in successfully for ${competition}!`);
+
+                const submitBtn = document.getElementById('checkinSubmitBtn');
+                submitBtn.classList.add('loading');
+
+                // Simulate API call
+                await this.delay(1000);
+
+                const participant = this.participants.find(p => p.id === participantId);
+                if (participant) {
+                    participant.checkedIn = true;
+                    participant.checkinTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    participant.status = 'checked_in';
+                    
+                    this.showSuccess('Participant checked in successfully!');
+                    this.updateCheckinStatistics();
+                    this.updateParticipantsList();
+                    this.updateDashboardStats();
+                } else {
+                    this.showError('Participant not found');
+                }
+
+                submitBtn.classList.remove('loading');
                 document.getElementById('participantId').value = '';
-            });
-            
-            // Code assignment form
-            document.getElementById('codeAssignmentForm').addEventListener('submit', function(e) {
+            }
+
+            async handleCodeAssignment(e) {
                 e.preventDefault();
                 const competition = document.getElementById('competitionSelect').value;
-                const participant = document.getElementById('participantSelect').value;
+                const participantId = document.getElementById('participantSelect').value;
                 const code = document.getElementById('codeLetterSelect').value;
-                
-                if (!competition || !participant || !code) {
-                    alert('Please fill all fields');
+
+                if (!competition || !participantId || !code) {
+                    this.showError('Please fill all fields');
                     return;
                 }
+
+                const submitBtn = document.getElementById('assignCodeBtn');
+                submitBtn.classList.add('loading');
+
+                // Simulate API call
+                await this.delay(1000);
+
+                const participant = this.participants.find(p => p.id === participantId);
+                if (participant) {
+                    participant.code = code;
+                    participant.checkinTime = participant.checkinTime || new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    this.showSuccess(`Code ${code} assigned successfully to ${participant.name}`);
+                    this.updateCodeStatus();
+                    this.updateAssignedCodesTable();
+                    this.updateDashboardStats();
+                } else {
+                    this.showError('Participant not found');
+                }
+
+                submitBtn.classList.remove('loading');
+                document.getElementById('codeAssignmentForm').reset();
+            }
+
+            // Stage control methods
+            async startCompetition() {
+                const btn = document.getElementById('startCompetitionBtn');
+                btn.classList.add('loading');
                 
-                // Simulate code assignment
-                alert(`Code ${code} assigned successfully!`);
-                this.reset();
-            });
-            
-            // Simulate real-time updates
-            setInterval(() => {
-                // This would typically fetch data from server in a real application
-                console.log('Checking for updates...');
-            }, 30000); // Check every 30 seconds
-        });
+                await this.delay(1500);
+                
+                this.showSuccess('Competition started successfully!');
+                btn.classList.remove('loading');
+            }
+
+            async pauseCompetition() {
+                const btn = document.getElementById('pauseCompetitionBtn');
+                btn.classList.add('loading');
+                
+                await this.delay(1000);
+                
+                this.showSuccess('Competition paused');
+                btn.classList.remove('loading');
+            }
+
+            async endCompetition() {
+                if (confirm('Are you sure you want to end the current competition?')) {
+                    const btn = document.getElementById('endCompetitionBtn');
+                    btn.classList.add('loading');
+                    
+                    await this.delay(1500);
+                    
+                    this.showSuccess('Competition ended successfully');
+                    btn.classList.remove('loading');
+                }
+            }
+
+            async makeAnnouncement() {
+                const announcement = document.getElementById('announcementText').value;
+                if (!announcement.trim()) {
+                    this.showError('Please enter an announcement');
+                    return;
+                }
+
+                const btn = document.getElementById('makeAnnouncementBtn');
+                btn.classList.add('loading');
+                
+                await this.delay(1000);
+                
+                this.showSuccess('Announcement made successfully!');
+                document.getElementById('announcementText').value = '';
+                btn.classList.remove('loading');
+            }
+
+            async callNextParticipant() {
+                const nextParticipant = this.participants.find(p => p.status === 'ready');
+                if (nextParticipant) {
+                    nextParticipant.status = 'on_stage';
+                    this.showSuccess(`Called ${nextParticipant.code} to the stage`);
+                    this.updateParticipantQueue();
+                } else {
+                    this.showError('No participants ready to be called');
+                }
+            }
+
+            async addTimeExtension() {
+                this.showSuccess('15 minutes added to current time slot');
+            }
+
+            async technicalBreak() {
+                this.showSuccess('Technical break initiated - 10 minutes');
+            }
+
+            // Utility methods
+            updateCompetitionDropdown(dropdownId) {
+                const dropdown = document.getElementById(dropdownId);
+                let html = '<option value="">Select Competition</option>';
+                
+                this.competitions.forEach(comp => {
+                    html += `<option value="${comp.id}">${comp.name}</option>`;
+                });
+                
+                dropdown.innerHTML = html;
+            }
+
+            updateParticipantDropdown() {
+                const dropdown = document.getElementById('participantSelect');
+                let html = '<option value="">Select Participant</option>';
+                
+                this.participants.forEach(participant => {
+                    if (!participant.code) {
+                        html += `<option value="${participant.id}">${participant.name} (${participant.id})</option>`;
+                    }
+                });
+                
+                dropdown.innerHTML = html;
+            }
+
+            updateCodeDropdown() {
+                const dropdown = document.getElementById('codeLetterSelect');
+                let html = '<option value="">Select Code</option>';
+                
+                // Generate available codes
+                const usedCodes = this.participants.map(p => p.code).filter(Boolean);
+                const allCodes = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08', 'C-09', 'C-10'];
+                
+                allCodes.forEach(code => {
+                    if (!usedCodes.includes(code)) {
+                        html += `<option value="${code}">${code}</option>`;
+                    }
+                });
+                
+                dropdown.innerHTML = html;
+            }
+
+            renderScheduleTable(tbody, scheduleData) {
+                let html = '';
+                scheduleData.forEach(item => {
+                    let statusBadge = '';
+                    if (item.status === 'live') {
+                        statusBadge = '<span class="badge bg-success">Live</span>';
+                    } else if (item.status === 'upcoming') {
+                        statusBadge = '<span class="badge bg-warning">Upcoming</span>';
+                    } else {
+                        statusBadge = '<span class="badge bg-info">Scheduled</span>';
+                    }
+
+                    html += `
+                        <tr>
+                            <td>${item.time}</td>
+                            <td>${item.stage}</td>
+                            <td>${item.competition}</td>
+                            <td>${item.participants}</td>
+                            <td>${statusBadge}</td>
+                            <td>${item.controller || 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+                
+                tbody.innerHTML = html;
+            }
+
+            getNextCompetition(currentId) {
+                const currentIndex = this.competitions.findIndex(c => c.id === currentId);
+                const nextComp = this.competitions[currentIndex + 1];
+                return nextComp ? nextComp.name : 'No upcoming competitions';
+            }
+
+            getCategoryName(category) {
+                const categories = {
+                    'technical': 'Technical',
+                    'cultural': 'Cultural',
+                    'sports': 'Sports',
+                    'academic': 'Academic'
+                };
+                return categories[category] || category;
+            }
+
+            getTimeSlot(queuePosition) {
+                const baseTime = '10:30';
+                const interval = 15; // minutes
+                const startTime = new Date(`2024-01-01 ${baseTime}`);
+                startTime.setMinutes(startTime.getMinutes() + (queuePosition - 1) * interval);
+                
+                const endTime = new Date(startTime);
+                endTime.setMinutes(endTime.getMinutes() + interval);
+                
+                return `${startTime.getHours()}:${startTime.getMinutes().toString().padStart(2, '0')} - ${endTime.getHours()}:${endTime.getMinutes().toString().padStart(2, '0')}`;
+            }
+
+            // Quick actions
+            quickCheckin(participantId) {
+                document.getElementById('participantId').value = participantId;
+                document.getElementById('checkinCompetition').value = '1';
+                document.getElementById('quickCheckinForm').dispatchEvent(new Event('submit'));
+            }
+
+            markComplete(participantId) {
+                const participant = this.participants.find(p => p.id === participantId);
+                if (participant) {
+                    participant.status = 'completed';
+                    this.showSuccess(`Marked ${participant.code} as completed`);
+                    this.updateParticipantQueue();
+                }
+            }
+
+            callToStage(participantId) {
+                const participant = this.participants.find(p => p.id === participantId);
+                if (participant) {
+                    participant.status = 'on_stage';
+                    this.showSuccess(`Called ${participant.code} to the stage`);
+                    this.updateParticipantQueue();
+                }
+            }
+
+            prepareParticipant(participantId) {
+                const participant = this.participants.find(p => p.id === participantId);
+                if (participant) {
+                    participant.status = 'ready';
+                    this.showSuccess(`Prepared ${participant.code} for stage`);
+                    this.updateParticipantQueue();
+                }
+            }
+
+            prepareStage() {
+                this.showSuccess('Stage preparation initiated');
+            }
+
+            reassignCode(participantId) {
+                const participant = this.participants.find(p => p.id === participantId);
+                if (participant && confirm(`Reassign code from ${participant.code}?`)) {
+                    participant.code = null;
+                    this.showSuccess('Code reassigned');
+                    this.updateCodeStatus();
+                    this.updateAssignedCodesTable();
+                    this.updateCodeDropdown();
+                }
+            }
+
+            async saveNotes() {
+                const notes = document.getElementById('quickNotes').value;
+                // In real app, save to localStorage or backend
+                localStorage.setItem('stageControllerNotes', notes);
+                this.showSuccess('Notes saved successfully!');
+            }
+
+            loadNotes() {
+                const savedNotes = localStorage.getItem('stageControllerNotes');
+                if (savedNotes) {
+                    document.getElementById('quickNotes').value = savedNotes;
+                }
+            }
+
+            // UI helpers
+            showSuccess(message) {
+                document.getElementById('successMessage').textContent = message;
+                new bootstrap.Modal(document.getElementById('successModal')).show();
+            }
+
+            showError(message, details = '') {
+                document.getElementById('errorMessage').textContent = message;
+                document.getElementById('errorDetails').textContent = details;
+                new bootstrap.Modal(document.getElementById('errorModal')).show();
+            }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            startRealTimeUpdates() {
+                // Simulate real-time updates
+                setInterval(() => {
+                    this.updateDashboardStats();
+                }, 30000); // Update every 30 seconds
+            }
+
+            logout() {
+                if (confirm('Are you sure you want to logout?')) {
+                    // In real app, clear session and redirect
+                    alert('Logged out successfully!');
+                    window.location.href = 'login.html';
+                }
+            }
+        }
+
+        // Initialize the application
+        const app = new StageControllerApp();
     </script>
 </body>
 </html>
