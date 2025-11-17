@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniFest 2026 - University Festival Management System</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --secondary: #E74C3C;
+            --accent: #F39C12;
+            --success: #27AE60;
+            --warning: #F1C40F;
+            --info: #3498DB;
+            --light-bg: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .navbar {
+            background-color: var(--primary);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 8px 15px !important;
+            border-radius: 6px;
+            margin: 0 3px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background-color: rgba(255,255,255,0.15);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.85) 0%, rgba(231, 76, 60, 0.8) 100%), 
+                        url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(transparent, var(--light-bg));
+        }
+        
+        .hero-title {
+            font-size: 3.8rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background-color: #c0392b;
+            border-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        .btn-outline-light {
+            border-width: 2px;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline-light:hover {
+            background-color: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .section-title {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 40px;
+            position: relative;
+            padding-bottom: 15px;
+            font-size: 2.2rem;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent), var(--secondary));
+            border-radius: 2px;
+        }
+        
+        .section-title.center:after {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .gallery-container {
+            position: relative;
+            overflow: hidden;
+            height: 500px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .gallery-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .gallery-slide.active {
+            opacity: 1;
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+        }
+        
+        .gallery-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255,255,255,0.9);
+            color: var(--primary);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .gallery-nav:hover {
+            background-color: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .gallery-prev {
+            left: 20px;
+        }
+        
+        .gallery-next {
+            right: 20px;
+        }
+        
+        .results-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .college-row {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        
+        .college-row:hover {
+            background-color: rgba(44, 62, 80, 0.02);
+        }
+        
+        .college-row:last-child {
+            border-bottom: none;
+        }
+        
+        .college-rank {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            color: white;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .rank-1 .college-rank {
+            background: linear-gradient(135deg, gold, #ffcc00);
+            color: var(--primary);
+        }
+        
+        .rank-2 .college-rank {
+            background: linear-gradient(135deg, silver, #c0c0c0);
+            color: var(--primary);
+        }
+        
+        .rank-3 .college-rank {
+            background: linear-gradient(135deg, #cd7f32, #b08d57);
+            color: white;
+        }
+        
+        .college-info {
+            flex-grow: 1;
+        }
+        
+        .college-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .college-points {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-top: 5px;
+        }
+        
+        .winner-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            height: 100%;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .winner-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .winner-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+        
+        .winner-card:hover::before {
+            animation: shine 1.5s;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+        }
+        
+        .winner-rank {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .winner-1 .winner-rank {
+            background: linear-gradient(135deg, gold, #ffcc00);
+            color: var(--primary);
+            animation: pulse-gold 2s infinite;
+        }
+        
+        .winner-2 .winner-rank {
+            background: linear-gradient(135deg, silver, #c0c0c0);
+            color: var(--primary);
+            animation: pulse-silver 2s infinite;
+        }
+        
+        .winner-3 .winner-rank {
+            background: linear-gradient(135deg, #cd7f32, #b08d57);
+            color: white;
+            animation: pulse-bronze 2s infinite;
+        }
+        
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+        
+        @keyframes pulse-silver {
+            0% { box-shadow: 0 0 0 0 rgba(192, 192, 192, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(192, 192, 192, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(192, 192, 192, 0); }
+        }
+        
+        @keyframes pulse-bronze {
+            0% { box-shadow: 0 0 0 0 rgba(205, 127, 50, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(205, 127, 50, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(205, 127, 50, 0); }
+        }
+        
+        .winner-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .winner-college {
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .winner-event {
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .winner-score {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 80px;
+        }
+        
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            margin-bottom: 25px;
+            transition: transform 0.3s;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stats-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+        
+        .stats-label {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .login-dropdown .dropdown-menu {
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .login-dropdown .dropdown-item {
+            padding: 12px 20px;
+            transition: all 0.3s;
+        }
+        
+        .login-dropdown .dropdown-item:hover {
+            background-color: rgba(44, 62, 80, 0.05);
+        }
+        
+        .modal-content {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+        
+        .modal-header {
+            background: linear-gradient(to right, var(--primary), #34495e);
+            color: white;
+            border-bottom: none;
+            padding: 20px 25px;
+        }
+        
+        .results-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .competition-selector {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--primary);
+            opacity: 0.7;
+        }
+        
+        /* Targeted Confetti Container */
+        .results-confetti-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            overflow: hidden;
+            border-radius: 15px;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 20px;
+            top: -20px;
+            opacity: 0;
+        }
+        
+        .confetti-1 { background: var(--secondary); animation: confetti-fall 3s linear; }
+        .confetti-2 { background: var(--accent); animation: confetti-fall 3s linear 0.2s; }
+        .confetti-3 { background: var(--primary); animation: confetti-fall 3s linear 0.4s; }
+        .confetti-4 { background: var(--success); animation: confetti-fall 3s linear 0.6s; }
+        .confetti-5 { background: var(--info); animation: confetti-fall 3s linear 0.8s; }
+        .confetti-6 { background: var(--warning); animation: confetti-fall 3s linear 1s; }
+        .confetti-7 { background: var(--secondary); animation: confetti-fall 3s linear 1.2s; }
+        .confetti-8 { background: var(--accent); animation: confetti-fall 3s linear 1.4s; }
+        .confetti-9 { background: var(--primary); animation: confetti-fall 3s linear 1.6s; }
+        .confetti-10 { background: var(--success); animation: confetti-fall 3s linear 1.8s; }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+        }
+        
+        .celebration-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: gold;
+            text-shadow: 0 0 20px rgba(255,215,0,0.8);
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        .celebration-text.show {
+            animation: celebration-pop 2s ease-out;
+        }
+        
+        @keyframes celebration-pop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+        
+        .results-display-celebration {
+            position: relative;
+            overflow: hidden;
+            min-height: 300px;
+        }
+        
+        .results-display-celebration.celebrating::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,215,0,0.05), rgba(231,76,60,0.05), rgba(52,152,219,0.05));
+            z-index: 1;
+            animation: colorShift 3s ease-in-out;
+        }
+        
+        @keyframes colorShift {
+            0% { background: linear-gradient(45deg, rgba(255,215,0,0.05), rgba(231,76,60,0.05), rgba(52,152,219,0.05)); }
+            33% { background: linear-gradient(45deg, rgba(231,76,60,0.05), rgba(52,152,219,0.05), rgba(255,215,0,0.05)); }
+            66% { background: linear-gradient(45deg, rgba(52,152,219,0.05), rgba(255,215,0,0.05), rgba(231,76,60,0.05)); }
+            100% { background: linear-gradient(45deg, rgba(255,215,0,0.05), rgba(231,76,60,0.05), rgba(52,152,219,0.05)); }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .gallery-container {
+                height: 350px;
+            }
+            
+            .college-row {
+                padding: 15px;
+            }
+            
+            .college-rank {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+                margin-right: 15px;
+            }
+            
+            .celebration-text {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-graduation-cap me-2"></i>UniFest 2026
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#gallery">Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#results">Results</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#events">Events</a>
+                    </li>
+                    <li class="nav-item dropdown login-dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#superAdminModal">
+                                <i class="fas fa-crown me-2"></i>Super Admin
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#collegeAdminModal">
+                                <i class="fas fa-user-tie me-2"></i>College Admin
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+        <div class="container">
+            <h1 class="hero-title">UniFest 2026</h1>
+            <p class="hero-subtitle">Celebrating Talent, Creativity & Excellence</p>
+            <p class="lead mb-4">Join us for the biggest university festival featuring competitions, performances, and cultural events from colleges across the region.</p>
+            <a href="#results" class="btn btn-primary me-3">View Results</a>
+            <a href="#gallery" class="btn btn-outline-light">Explore Gallery</a>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="stats-card">
+                        <div class="stats-number">25+</div>
+                        <div class="stats-label">Participating Colleges</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card">
+                        <div class="stats-number">50+</div>
+                        <div class="stats-label">Competitions & Events</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card">
+                        <div class="stats-number">1500+</div>
+                        <div class="stats-label">Student Participants</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card">
+                        <div class="stats-number">75+</div>
+                        <div class="stats-label">Expert Judges</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="py-5 bg-light" id="gallery">
+        <div class="container">
+            <h2 class="section-title text-center center">Festival Gallery</h2>
+            <p class="text-center mb-5">Experience the highlights from UniFest 2026 competitions and cultural events</p>
+            
+            <div class="gallery-container">
+                <button class="gallery-nav gallery-prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="gallery-nav gallery-next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <div class="gallery-slide active" style="background-image: url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');">
+                    <div class="gallery-overlay">
+                        <h3>Cultural Dance Competition</h3>
+                        <p>Teams from 15 colleges showcased their talent in traditional and contemporary dance forms</p>
+                    </div>
+                </div>
+                <div class="gallery-slide" style="background-image: url('https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');">
+                    <div class="gallery-overlay">
+                        <h3>Tech Expo 2026</h3>
+                        <p>Innovative projects and prototypes from engineering and technology students</p>
+                    </div>
+                </div>
+                <div class="gallery-slide" style="background-image: url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');">
+                    <div class="gallery-overlay">
+                        <h3>Music Band Competition</h3>
+                        <p>Rock, pop, classical and fusion performances by talented student bands</p>
+                    </div>
+                </div>
+                <div class="gallery-slide" style="background-image: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');">
+                    <div class="gallery-overlay">
+                        <h3>Stage Performances</h3>
+                        <p>Drama, theatrical acts and stand-up comedy showcasing student creativity</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="py-5" id="results">
+        <div class="container">
+            <h2 class="section-title text-center center">Competition Results</h2>
+            <p class="text-center mb-5">See how colleges performed across various competitions at UniFest 2026</p>
+            
+            <!-- College Results -->
+            <div class="results-container">
+                <h3 class="mb-4">College Rankings</h3>
+                
+                <div class="college-row rank-1">
+                    <div class="college-rank">1</div>
+                    <div class="college-info">
+                        <h4 class="college-name">University of Technology</h4>
+                        <div class="college-points">385 Points</div>
+                    </div>
+                </div>
+                
+                <div class="college-row rank-2">
+                    <div class="college-rank">2</div>
+                    <div class="college-info">
+                        <h4 class="college-name">City Arts College</h4>
+                        <div class="college-points">342 Points</div>
+                    </div>
+                </div>
+                
+                <div class="college-row rank-3">
+                    <div class="college-rank">3</div>
+                    <div class="college-info">
+                        <h4 class="college-name">Metropolitan University</h4>
+                        <div class="college-points">298 Points</div>
+                    </div>
+                </div>
+                
+                <div class="college-row">
+                    <div class="college-rank">4</div>
+                    <div class="college-info">
+                        <h4 class="college-name">Northern State College</h4>
+                        <div class="college-points">265 Points</div>
+                    </div>
+                </div>
+                
+                <div class="college-row">
+                    <div class="college-rank">5</div>
+                    <div class="college-info">
+                        <h4 class="college-name">Eastern University</h4>
+                        <div class="college-points">240 Points</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Individual Results with Competition Filter -->
+            <div class="results-container">
+                <h3 class="mb-4">Individual Competition Results</h3>
+                
+                <!-- Competition Selector -->
+                <div class="competition-selector">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label for="competitionSelect" class="form-label fw-bold fs-5">Select Competition to View Winners</label>
+                            <select class="form-select form-select-lg" id="competitionSelect">
+                                <option value="">-- Choose a Competition --</option>
+                                <option value="singing">Classical Singing</option>
+                                <option value="dance">Dance Solo</option>
+                                <option value="debate">Debate Competition</option>
+                                <option value="programming">Programming Contest</option>
+                                <option value="film">Short Film</option>
+                                <option value="art">Art Competition</option>
+                                <option value="robotics">Robotics Competition</option>
+                                <option value="band">Music Band Competition</option>
+                                <option value="drama">Drama Performance</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Display Area with Confetti Container -->
+                <div id="resultsDisplay" class="results-display-celebration">
+                    <div class="results-confetti-container" id="confettiContainer"></div>
+                    <div class="celebration-text" id="celebrationText">Congratulations!</div>
+                    
+                    <div class="no-results">
+                        <i class="fas fa-trophy fa-3x mb-3" style="color: var(--accent);"></i>
+                        <h4>Select a competition to view results</h4>
+                        <p class="mb-0">Choose from the dropdown above to see the 1st, 2nd, and 3rd place winners</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h4><i class="fas fa-graduation-cap me-2"></i>UniFest 2026</h4>
+                    <p class="mt-3">Celebrating talent, creativity and excellence across universities. Join us for the biggest academic and cultural festival of the year.</p>
+                    <div class="mt-4">
+                        <a href="#" class="me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-2"><a href="#home">Home</a></li>
+                        <li class="mb-2"><a href="#gallery">Gallery</a></li>
+                        <li class="mb-2"><a href="#results">Results</a></li>
+                        <li class="mb-2"><a href="#events">Events</a></li>
+                        <li><a href="#about">About UniFest</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Contact Us</h5>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> University Avenue, Education City</li>
+                        <li class="mb-2"><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</li>
+                        <li class="mb-2"><i class="fas fa-envelope me-2"></i> info@unifest2026.edu</li>
+                        <li><i class="fas fa-clock me-2"></i> Mon - Fri: 9:00 AM - 6:00 PM</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+            <div class="text-center">
+                <p>&copy; 2026 UniFest - University Festival Management System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modals -->
+    <!-- Super Admin Modal -->
+    <div class="modal fade" id="superAdminModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-crown me-2"></i>Super Admin</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="superAdminEmail" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="superAdminEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label for="superAdminPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="superAdminPassword">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- College Admin Modal -->
+    <div class="modal fade" id="collegeAdminModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-tie me-2"></i>College Admin</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="collegeAdminEmail" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="collegeAdminEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label for="collegeAdminPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="collegeAdminPassword">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Gallery Slideshow
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.gallery-slide');
+        const totalSlides = slides.length;
+        let slideInterval = setInterval(nextSlide, 5000);
+        
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % totalSlides;
+            slides[currentSlide].classList.add('active');
+        }
+        
+        function prevSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+        }
+        
+        // Add event listeners for gallery navigation
+        document.querySelector('.gallery-prev').addEventListener('click', function() {
+            clearInterval(slideInterval);
+            prevSlide();
+            slideInterval = setInterval(nextSlide, 5000);
+        });
+        
+        document.querySelector('.gallery-next').addEventListener('click', function() {
+            clearInterval(slideInterval);
+            nextSlide();
+            slideInterval = setInterval(nextSlide, 5000);
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Create confetti within results container
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            container.innerHTML = ''; // Clear previous confetti
+            
+            for (let i = 1; i <= 10; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = `confetti confetti-${i}`;
+                
+                // Random horizontal position within the container
+                const leftPosition = Math.random() * 100;
+                confetti.style.left = `${leftPosition}%`;
+                
+                // Random rotation
+                const rotation = Math.random() * 360;
+                confetti.style.transform = `rotate(${rotation}deg)`;
+                
+                container.appendChild(confetti);
+            }
+        }
+        
+        // Celebration animation
+        function startCelebration() {
+            const resultsDisplay = document.getElementById('resultsDisplay');
+            const celebrationText = document.getElementById('celebrationText');
+            
+            // Add celebrating class to results display
+            resultsDisplay.classList.add('celebrating');
+            
+            // Create and show confetti
+            createConfetti();
+            
+            // Show celebration text
+            celebrationText.classList.add('show');
+            
+            // Remove celebration effects after 3 seconds
+            setTimeout(() => {
+                resultsDisplay.classList.remove('celebrating');
+                celebrationText.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Competition results data
+        const competitionResults = {
+            singing: [
+                { name: "Priya Sharma", college: "City Arts College", score: "98/100", rank: "1st" },
+                { name: "Neha Gupta", college: "University of Technology", score: "95/100", rank: "2nd" },
+                { name: "Sanjana Reddy", college: "Metropolitan University", score: "92/100", rank: "3rd" }
+            ],
+            dance: [
+                { name: "Meera Patel", college: "Northern State College", score: "94/100", rank: "1st" },
+                { name: "Ananya Desai", college: "City Arts College", score: "92/100", rank: "2nd" },
+                { name: "Rohit Kumar", college: "Eastern University", score: "90/100", rank: "3rd" }
+            ],
+            debate: [
+                { name: "Rahul Verma", college: "University of Technology", score: "96/100", rank: "1st" },
+                { name: "Aditya Kumar", college: "Metropolitan University", score: "94/100", rank: "2nd" },
+                { name: "Priya Singh", college: "City Arts College", score: "92/100", rank: "3rd" }
+            ],
+            programming: [
+                { name: "Vikram Singh", college: "University of Technology", score: "97/100", rank: "1st" },
+                { name: "Arun Mehta", college: "Metropolitan University", score: "95/100", rank: "2nd" },
+                { name: "Sneha Reddy", college: "City Arts College", score: "93/100", rank: "3rd" }
+            ],
+            film: [
+                { name: "Aditya Kumar", college: "Metropolitan University", score: "95/100", rank: "1st" },
+                { name: "Rahul Sharma", college: "University of Technology", score: "93/100", rank: "2nd" },
+                { name: "Priya Patel", college: "City Arts College", score: "91/100", rank: "3rd" }
+            ],
+            art: [
+                { name: "Ananya Desai", college: "City Arts College", score: "96/100", rank: "1st" },
+                { name: "Rohit Kumar", college: "Eastern University", score: "94/100", rank: "2nd" },
+                { name: "Meera Singh", college: "Northern State College", score: "92/100", rank: "3rd" }
+            ],
+            robotics: [
+                { name: "Vikram Singh", college: "University of Technology", score: "98/100", rank: "1st" },
+                { name: "Arun Mehta", college: "Metropolitan University", score: "96/100", rank: "2nd" },
+                { name: "Rahul Verma", college: "University of Technology", score: "94/100", rank: "3rd" }
+            ],
+            band: [
+                { name: "Rhythm Masters", college: "City Arts College", score: "97/100", rank: "1st" },
+                { name: "Sound Waves", college: "University of Technology", score: "95/100", rank: "2nd" },
+                { name: "Melody Makers", college: "Metropolitan University", score: "93/100", rank: "3rd" }
+            ],
+            drama: [
+                { name: "Drama Kings", college: "Metropolitan University", score: "96/100", rank: "1st" },
+                { name: "Stage Masters", college: "City Arts College", score: "94/100", rank: "2nd" },
+                { name: "Acting Crew", college: "University of Technology", score: "92/100", rank: "3rd" }
+            ]
+        };
+        
+        // Competition selection functionality
+        document.getElementById('competitionSelect').addEventListener('change', function() {
+            const competition = this.value;
+            const resultsDisplay = document.getElementById('resultsDisplay');
+            
+            if (competition && competitionResults[competition]) {
+                const winners = competitionResults[competition];
+                const competitionName = this.options[this.selectedIndex].text;
+                
+                let html = `<h4 class="mb-4">${competitionName} - Top 3 Winners</h4><div class="row">`;
+                
+                winners.forEach(winner => {
+                    const rankClass = winner.rank === "1st" ? "winner-1" : 
+                                     winner.rank === "2nd" ? "winner-2" : "winner-3";
+                    
+                    html += `
+                    <div class="col-md-4 mb-4">
+                        <div class="winner-card ${rankClass}">
+                            <div class="winner-rank">${winner.rank}</div>
+                            <div class="winner-name">${winner.name}</div>
+                            <div class="winner-college">${winner.college}</div>
+                            <div class="winner-score">${winner.score}</div>
+                        </div>
+                    </div>`;
+                });
+                
+                html += `</div>`;
+                resultsDisplay.innerHTML = html;
+                
+                // Add confetti container and celebration text back
+                const confettiContainer = document.createElement('div');
+                confettiContainer.className = 'results-confetti-container';
+                confettiContainer.id = 'confettiContainer';
+                
+                const celebrationText = document.createElement('div');
+                celebrationText.className = 'celebration-text';
+                celebrationText.id = 'celebrationText';
+                celebrationText.textContent = 'Congratulations!';
+                
+                resultsDisplay.prepend(celebrationText);
+                resultsDisplay.prepend(confettiContainer);
+                
+                // Start celebration when results are shown
+                startCelebration();
+            } else if (competition) {
+                resultsDisplay.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-exclamation-circle fa-3x mb-3" style="color: var(--warning);"></i>
+                        <h4>No results available</h4>
+                        <p class="mb-0">Results for this competition are not yet available or the competition is still ongoing.</p>
+                    </div>`;
+            } else {
+                resultsDisplay.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-trophy fa-3x mb-3" style="color: var(--accent);"></i>
+                        <h4>Select a competition to view results</h4>
+                        <p class="mb-0">Choose from the dropdown above to see the 1st, 2nd, and 3rd place winners</p>
+                    </div>`;
+            }
+        });
+    </script>
+</body>
+</html>
