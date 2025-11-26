@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - UniFest 2026</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --secondary: #E74C3C;
+            --accent: #F39C12;
+            --success: #27AE60;
+            --warning: #F1C40F;
+            --info: #3498DB;
+            --light-bg: #f8fafc;r
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--primary);
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            background-color: var(--primary);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 8px 15px !important;
+            border-radius: 6px;
+            margin: 0 3px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background-color: rgba(255,255,255,0.15);
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(231, 76, 60, 0.8) 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+        }
+        
+        .student-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .competition-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .competition-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .status-upcoming {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--info);
+        }
+        
+        .status-ongoing {
+            background-color: rgba(243, 156, 18, 0.1);
+            color: var(--accent);
+        }
+        
+        .status-completed {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+        }
+        
+        .status-cancelled {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--secondary);
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-top: 4px solid var(--accent);
+        }
+        
+        .winner-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-weight: 700;
+            margin-right: 15px;
+        }
+        
+        .winner-1 {
+            background: linear-gradient(135deg, gold, #ffcc00);
+            color: var(--primary);
+        }
+        
+        .winner-2 {
+            background: linear-gradient(135deg, silver, #c0c0c0);
+            color: var(--primary);
+        }
+        
+        .winner-3 {
+            background: linear-gradient(135deg, #cd7f32, #b08d57);
+            color: white;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent), var(--secondary));
+            border-radius: 2px;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stats-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+        
+        .stats-label {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+        
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--primary);
+            opacity: 0.7;
+        }
+        
+        .tab-content {
+            padding: 20px 0;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--primary) !important;
+            background-color: transparent;
+            border: none;
+            padding: 12px 20px;
+            font-weight: 600;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--secondary) !important;
+            border-bottom: 3px solid var(--secondary);
+            background-color: transparent;
+        }
+        
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+        
+        .schedule-time {
+            width: 120px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .schedule-details {
+            flex-grow: 1;
+        }
+        
+        .schedule-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .schedule-location {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-graduation-cap me-2"></i>UniFest 2026
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="student-dashboard.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>John Doe
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="index.html"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1>Student Dashboard</h1>
+                    <p class="lead mb-0">Welcome back, John Doe! Track your competitions and results here.</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="student-card">
+                        <div class="row">
+                            <div class="col-8">
+                                <h5 class="mb-1">John Doe</h5>
+                                <p class="mb-1">University of Technology</p>
+                                <small class="text-muted">Student ID: STU-2026-UT-042</small>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-user-graduate fa-2x text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="container">
+        <!-- Stats Overview -->
+        <div class="row mb-5">
+            <div class="col-md-3 col-6">
+                <div class="stats-card">
+                    <div class="stats-number">5</div>
+                    <div class="stats-label">Registered Competitions</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-card">
+                    <div class="stats-number">2</div>
+                    <div class="stats-label">Completed</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-card">
+                    <div class="stats-number">1</div>
+                    <div class="stats-label">Ongoing</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-card">
+                    <div class="stats-number">2</div>
+                    <div class="stats-label">Upcoming</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs Section -->
+        <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="competitions-tab" data-bs-toggle="tab" data-bs-target="#competitions" type="button" role="tab">My Competitions</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="results-tab" data-bs-toggle="tab" data-bs-target="#results" type="button" role="tab">My Results</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab">My Schedule</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="dashboardTabsContent">
+            <!-- Competitions Tab -->
+            <div class="tab-pane fade show active" id="competitions" role="tabpanel">
+                <h3 class="section-title">My Competitions</h3>
+                
+                <div class="row">
+                    <!-- Ongoing Competition -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="competition-card">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5>Programming Contest</h5>
+                                <span class="status-badge status-ongoing">Ongoing</span>
+                            </div>
+                            <p class="mb-2"><i class="fas fa-calendar-alt me-2"></i>October 15, 2026 | 10:00 AM - 1:00 PM</p>
+                            <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>Tech Building, Room 205</p>
+                            <p class="mb-3">Algorithm design and problem-solving competition for computer science students.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Team: Code Warriors</small>
+                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Upcoming Competition -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="competition-card">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5>Debate Competition</h5>
+                                <span class="status-badge status-upcoming">Upcoming</span>
+                            </div>
+                            <p class="mb-2"><i class="fas fa-calendar-alt me-2"></i>October 18, 2026 | 2:00 PM - 4:00 PM</p>
+                            <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>Main Auditorium</p>
+                            <p class="mb-3">Inter-college debate on "The Impact of AI on Future Employment".</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Team: Orators United</small>
+                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Completed Competition -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="competition-card">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5>Robotics Competition</h5>
+                                <span class="status-badge status-completed">Completed</span>
+                            </div>
+                            <p class="mb-2"><i class="fas fa-calendar-alt me-2"></i>October 10, 2026 | 9:00 AM - 12:00 PM</p>
+                            <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>Engineering Building, Lab 3</p>
+                            <p class="mb-3">Autonomous robot navigation challenge with obstacle avoidance.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Team: RoboMasters</small>
+                                <button class="btn btn-sm btn-outline-primary">View Results</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Upcoming Competition -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="competition-card">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5>Short Film Competition</h5>
+                                <span class="status-badge status-upcoming">Upcoming</span>
+                            </div>
+                            <p class="mb-2"><i class="fas fa-calendar-alt me-2"></i>October 22, 2026 | 6:00 PM - 8:00 PM</p>
+                            <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>Media Center, Screening Room</p>
+                            <p class="mb-3">5-minute short film competition on the theme "Future Visions".</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Team: Visionary Films</small>
+                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Tab -->
+            <div class="tab-pane fade" id="results" role="tabpanel">
+                <h3 class="section-title">My Results</h3>
+                
+                <div class="row">
+                    <!-- Result with Win -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="result-card">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="winner-badge winner-1">1st</div>
+                                <div>
+                                    <h5 class="mb-1">Robotics Competition</h5>
+                                    <p class="mb-0 text-muted">October 10, 2026</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p class="mb-1"><strong>Team:</strong> RoboMasters</p>
+                                    <p class="mb-1"><strong>Score:</strong> 94/100</p>
+                                </div>
+                                <div class="col-6">
+                                    <p class="mb-1"><strong>Position:</strong> 1st Place</p>
+                                    <p class="mb-0"><strong>Points:</strong> 25</p>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-success me-2"><i class="fas fa-download me-1"></i> Certificate</button>
+                                <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Result with Placement -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="result-card">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="winner-badge winner-3">3rd</div>
+                                <div>
+                                    <h5 class="mb-1">Art Competition</h5>
+                                    <p class="mb-0 text-muted">October 8, 2026</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p class="mb-1"><strong>Category:</strong> Digital Art</p>
+                                    <p class="mb-1"><strong>Score:</strong> 88/100</p>
+                                </div>
+                                <div class="col-6">
+                                    <p class="mb-1"><strong>Position:</strong> 3rd Place</p>
+                                    <p class="mb-0"><strong>Points:</strong> 15</p>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-success me-2"><i class="fas fa-download me-1"></i> Certificate</button>
+                                <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Result without Placement -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="result-card">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-award text-muted"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Music Band Competition</h5>
+                                    <p class="mb-0 text-muted">October 5, 2026</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p class="mb-1"><strong>Band:</strong> Sound Waves</p>
+                                    <p class="mb-1"><strong>Score:</strong> 82/100</p>
+                                </div>
+                                <div class="col-6">
+                                    <p class="mb-1"><strong>Position:</strong> 5th Place</p>
+                                    <p class="mb-0"><strong>Points:</strong> 10</p>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- No results message -->
+                    <div class="col-12" id="noResultsMessage" style="display: none;">
+                        <div class="empty-state">
+                            <i class="fas fa-trophy fa-3x mb-3" style="color: var(--accent);"></i>
+                            <h4>No Results Available</h4>
+                            <p class="mb-0">Your competition results will appear here once they are published by the judges.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Tab -->
+            <div class="tab-pane fade" id="schedule" role="tabpanel">
+                <h3 class="section-title">My Schedule</h3>
+                
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Today's Schedule -->
+                        <div class="competition-card mb-4">
+                            <h5 class="mb-3"><i class="fas fa-calendar-day me-2 text-primary"></i>Today - October 15, 2026</h5>
+                            
+                            <div class="schedule-item">
+                                <div class="schedule-time">10:00 AM - 1:00 PM</div>
+                                <div class="schedule-details">
+                                    <div class="schedule-title">Programming Contest</div>
+                                    <div class="schedule-location">Tech Building, Room 205</div>
+                                </div>
+                                <span class="status-badge status-ongoing">Ongoing</span>
+                            </div>
+                            
+                            <div class="schedule-item">
+                                <div class="schedule-time">3:00 PM - 4:00 PM</div>
+                                <div class="schedule-details">
+                                    <div class="schedule-title">Team Meeting - Debate Prep</div>
+                                    <div class="schedule-location">Library, Study Room 3</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Upcoming Schedule -->
+                        <div class="competition-card">
+                            <h5 class="mb-3"><i class="fas fa-calendar-week me-2 text-info"></i>Upcoming Events</h5>
+                            
+                            <div class="schedule-item">
+                                <div class="schedule-time">Oct 18, 2:00 PM</div>
+                                <div class="schedule-details">
+                                    <div class="schedule-title">Debate Competition</div>
+                                    <div class="schedule-location">Main Auditorium</div>
+                                </div>
+                                <span class="status-badge status-upcoming">Upcoming</span>
+                            </div>
+                            
+                            <div class="schedule-item">
+                                <div class="schedule-time">Oct 20, 10:00 AM</div>
+                                <div class="schedule-details">
+                                    <div class="schedule-title">Tech Expo Setup</div>
+                                    <div class="schedule-location">Exhibition Hall</div>
+                                </div>
+                            </div>
+                            
+                            <div class="schedule-item">
+                                <div class="schedule-time">Oct 22, 6:00 PM</div>
+                                <div class="schedule-details">
+                                    <div class="schedule-title">Short Film Competition</div>
+                                    <div class="schedule-location">Media Center, Screening Room</div>
+                                </div>
+                                <span class="status-badge status-upcoming">Upcoming</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <!-- Quick Stats -->
+                        <div class="competition-card">
+                            <h5 class="mb-3">Schedule Overview</h5>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Today</span>
+                                    <span>2 events</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>This Week</span>
+                                    <span>5 events</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-info" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>This Month</span>
+                                    <span>8 events</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 40%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <button class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-calendar-plus me-2"></i>Add to Calendar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h4><i class="fas fa-graduation-cap me-2"></i>UniFest 2026</h4>
+                    <p class="mt-3">Celebrating talent, creativity and excellence across universities. Join us for the biggest academic and cultural festival of the year.</p>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-2"><a href="index.html">Home</a></li>
+                        <li class="mb-2"><a href="index.html#gallery">Gallery</a></li>
+                        <li class="mb-2"><a href="index.html#results">Results</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Support</h5>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-2"><a href="#">Help Center</a></li>
+                        <li class="mb-2"><a href="#">Contact College Admin</a></li>
+                        <li><a href="#">Report an Issue</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+            <div class="text-center">
+                <p>&copy; 2026 UniFest - University Festival Management System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap & JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Student login form handling
+        document.getElementById('studentLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const studentCode = document.getElementById('studentCode').value;
+            
+            // Simple validation - in a real app, this would check against a database
+            if (studentCode.trim() === '') {
+                alert('Please enter your student code');
+                return;
+            }
+            
+            // Redirect to dashboard (in a real app, this would happen after authentication)
+            window.location.href = 'student-dashboard.html';
+        });
+        
+        // Tab functionality
+        const triggerTabList = document.querySelectorAll('#dashboardTabs button');
+        triggerTabList.forEach(triggerEl => {
+            const tabTrigger = new bootstrap.Tab(triggerEl);
+            
+            triggerEl.addEventListener('click', event => {
+                event.preventDefault();
+                tabTrigger.show();
+            });
+        });
+    </script>
+</body>
+</html>
